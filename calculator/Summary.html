@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project COMPASS - Business Case Summary</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen p-8">
+        <!-- Navigation -->
+        <div class="nav-bar">
+            <h1>EtexIT PMO - Project Calculator</h1>
+            <div class="nav-links">
+                <a href="index.html" class="nav-button cost">Cost Estimation</a>
+                <a href="savings.html" class="nav-button savings">Savings</a>
+                <a href="summary.html" class="nav-button business-case active">Business Case</a>
+                <a href="instructions.html" class="nav-button instructions">Instructions</a>
+                <a href="formulas.html" class="nav-button instructions">Formulas</a>
+            </div>
+        </div>
+
+        <!-- Project Info -->
+        <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-6">Business Case Summary</h2>
+            <div class="grid grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Project Title</label>
+                    <input type="text" id="projectTitle" class="mt-1 p-2 w-full border rounded-md bg-gray-50">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Project Owner</label>
+                    <input type="text" id="projectOwner" class="mt-1 p-2 w-full border rounded-md bg-gray-50">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Division/Department</label>
+                    <input type="text" id="division" class="mt-1 p-2 w-full border rounded-md bg-gray-50">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Business Case Currency</label>
+                    <select id="currency" class="mt-1 p-2 w-full border rounded-md bg-gray-50">
+                        <option value="EUR" selected>EUR</option>
+                        <option value="USD">USD</option>
+                        <option value="GBP">GBP</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="max-w-6xl mx-auto grid grid-cols-3 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-lg font-medium text-gray-700 mb-2">Return on Investment</h3>
+                <div id="roiValue" class="text-3xl font-bold text-green-600">0%</div>
+                <div class="text-sm text-gray-500">Over 5 years</div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-lg font-medium text-gray-700 mb-2">Payback Period</h3>
+                <div id="paybackPeriod" class="text-3xl font-bold text-blue-600">0 years</div>
+                <div class="text-sm text-gray-500">Time to break even</div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-lg font-medium text-gray-700 mb-2">Net Benefit</h3>
+                <div id="netBenefit" class="text-3xl font-bold text-purple-600">€0</div>
+                <div class="text-sm text-gray-500">Total savings - Total costs</div>
+            </div>
+        </div>
+
+        <!-- Financial Overview -->
+        <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-md p-6 mb-8">
+            <h3 class="text-lg font-medium text-gray-700 mb-4">5 Year Financial Overview</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="border p-2">Year</th>
+                            <th class="border p-2">Costs</th>
+                            <th class="border p-2">One-off Savings</th>
+                            <th class="border p-2">Recurring Savings</th>
+                            <th class="border p-2">Net Cash Flow</th>
+                            <th class="border p-2">Accumulated Benefit</th>
+                        </tr>
+                    </thead>
+                    <tbody id="financialOverview">
+                        <!-- Will be populated by JavaScript -->
+                        <tr>
+                            <td class="border p-2">Year 1</td>
+                            <td class="border p-2"><input type="number" class="w-full p-1 text-right" data-year="1" data-type="cost"></td>
+                            <td class="border p-2"><input type="number" class="w-full p-1 text-right" data-year="1" data-type="oneoff"></td>
+                            <td class="border p-2"><input type="number" class="w-full p-1 text-right" data-year="1" data-type="recurring"></td>
+                            <td class="border p-2" id="netFlow1">€0</td>
+                            <td class="border p-2" id="accumulated1">€0</td>
+                        </tr>
+                        <tr>
+                            <td class="border p-2">Year 2</td>
+                            <td class="border p-2"><input type="number" class="w-full p-1 text-right" data-year="2" data-type="cost"></td>
+                            <td class="border p-2"><input type="number" class="w-full p-1 text-right" data-year="2" data-type="oneoff"></td>
+                            <td class="border p-2"><input type="number" class="w-full p-1 text-right" data-year="2" data-type="recurring"></td>
+                            <td class="border p-2" id="netFlow2">€0</td>
+                            <td class="border p-2" id="accumulated2">€0</td>
+                        </tr>
+                        <tr>
+                            <td class="border p-2">Year 3</td>
+                            <td class="border p-2"><input type="number" class="w-full p-1 text-right" data-year="3" data-type="cost"></td>
+                            <td class="border p-2"><input type="number" class="w-full p-1 text-right" data-year="3" data-type="oneoff"></td>
+                            <td class="border p-2"><input type="number" class="w-full p-1 text-right" data-year="3" data-type="recurring"></td>
+                            <td class="border p-2" id="netFlow3">€0</td>
+                            <td class="border p-2" id="accumulated3">€0</td>
+                        </tr>
+                        <tr>
+                            <td class="border p-2">Year 4</td>
+                            <td class="border p-2"><input type="number" class="w-full p-1 text-right" data-year="4" data-type="cost"></td>
+                            <td class="border p-2"><input type="number" class="w-full p-1 text-right" data-year="4" data-type="oneoff"></td>
+                            <td class="border p-2"><input type="number" class="w-full p-1 text-right" data-year="4" data-type="recurring"></td>
+                            <td class="border p-2" id="netFlow4">€0</td>
+                            <td class="border p-2" id="accumulated4">€0</td>
+                        </tr>
+                        <tr>
+                            <td class="border p-2">Year 5</td>
+                            <td class="border p-2"><input type="number" class="w-full p-1 text-right" data-year="5" data-type="cost"></td>
+                            <td class="border p-2"><input type="number" class="w-full p-1 text-right" data-year="5" data-type="oneoff"></td>
+                            <td class="border p-2"><input type="number" class="w-full p-1 text-right" data-year="5" data-type="recurring"></td>
+                            <td class="border p-2" id="netFlow5">€0</td>
+                            <td class="border p-2" id="accumulated5">€0</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr class="font-bold">
+                            <td class="border p-2">Total</td>
+                            <td class="border p-2" id="totalCosts">€0</td>
+                            <td class="border p-2" id="totalOneOffSavings">€0</td>
+                            <td class="border p-2" id="totalRecurringSavings">€0</td>
+                            <td class="border p-2" id="totalNetCashFlow">€0</td>
+                            <td class="border p-2" id="finalAccumulatedBenefit">€0</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="max-w-6xl mx-auto grid grid-cols-2 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-lg font-medium text-gray-700 mb-4">Cash Flow Analysis</h3>
+                <div class="h-64">
+                    <canvas id="cashFlowChart"></canvas>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-lg font-medium text-gray-700 mb-4">Accumulated Benefit</h3>
+                <div class="h-64">
+                    <canvas id="accumulatedBenefitChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Report Actions -->
+        <div class="max-w-6xl mx-auto flex justify-end space-x-4">
+    <button onclick="resetBusinessCase()" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+        Reset
+    </button>
+    <button onclick="exportPDF()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        Export PDF
+    </button>
+    <button onclick="saveBusinessCase()" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+        Save Business Case
+    </button>
+</div>
+    </div>
+
+    <script src="business-case-summary.js"></script>
+</body>
+</html>
