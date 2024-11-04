@@ -2,7 +2,15 @@
 let costDistributionChart;
 let monthlyProjectionChart;
 
+
+
 // Initialize on page load
+window.addEventListener('storage', function(e) {
+    if (e.key === 'projectAssessment') {
+        calculateTotals();
+    }
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     // Set default date to today
     document.getElementById('estimationDate').valueAsDate = new Date();
@@ -20,6 +28,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Load any saved data
     loadSavedEstimate();
+    // Add immediate calculation to show initial risk adjustment
+    calculateTotals();
 });
 
 function initializeCharts() {
@@ -124,16 +134,42 @@ function calculateTotals() {
     const techCostData = calculateTechnologyCosts();
     const externalTotal = calculateExternalCosts();
     
-    // Calculate risk adjustment
+    // Get risk adjustment from saved assessment
+    let riskPercentage = 10; // default to 10%
+    let scoreText = '8-13';
+    const savedAssessment = localStorage.getItem('projectAssessment');
+    
+  if (savedAssessment) {
+    const assessment = JSON.parse(savedAssessment);
+    riskPercentage = assessment.riskAdjustment;
+    
+    // Determine score text based on total score
+    if (assessment.totalScore >= 21) {
+        scoreText = '21-24';
+    } else if (assessment.totalScore >= 17) {
+        scoreText = '17-20';
+    } else if (assessment.totalScore >= 13) {
+        scoreText = '13-16';
+    } else {
+        scoreText = '8-12';
+    }
+}
+    
+    // Update risk score display text
+    const riskScoreElement = document.getElementById('riskScore');
+    if (riskScoreElement) {
+        riskScoreElement.textContent = `${riskPercentage}% adjustment (Score: ${scoreText})`;
+    }
+    
+    // Calculate risk adjustment amount
     const baseTotal = teamCostData.total + techCostData.total + externalTotal;
-    const riskPercentage = parseFloat(document.getElementById('riskScore').value) || 0;
     const riskAdjustment = baseTotal * (riskPercentage / 100);
     
-    // Update risk adjustment display
+    // Update risk amount display
     const riskAdjustmentElement = document.getElementById('riskAdjustment');
-if (riskAdjustmentElement) {
-    riskAdjustmentElement.textContent = `Risk Adjustment: ${formatCurrency(riskAdjustment)}`;
-}
+    if (riskAdjustmentElement) {
+        riskAdjustmentElement.textContent = formatCurrency(riskAdjustment);
+    }
     
     // Calculate CAPEX/OPEX split
     const capexOpexSplit = calculateCapexOpexSplit(
@@ -631,3 +667,4 @@ function initializeEventListeners() {
         riskScore.addEventListener('change', calculateTotals);
     }
 }
+
