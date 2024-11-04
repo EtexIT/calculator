@@ -7,27 +7,23 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <div class="nav-bar">
-    <div class="flex">
+<body class="min-h-screen p-8">
+    <nav class="nav-bar">
         <h1>EtexIT PMO - Project Calculator</h1>
-    </div>
-    <div class="nav-links">
-        <a href="project-assesment.html" class="nav-button cost">Assessment</a>
-        <a href="index.html" class="nav-button cost">Cost Estimation</a>
-        <a href="savings.html" class="nav-button savings">Savings</a>
-        <a href="summary.html" class="nav-button business-case">Business Case</a>
-        <a href="instructions.html" class="nav-button instructions">Instructions</a>
-        <a href="formulas.html" class="nav-button instructions">Formulas</a>
-    </div>
-</div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-button cost">Cost Estimation</a>
+            <a href="savings.html" class="nav-button savings">Savings</a>
+            <a href="summary.html" class="nav-button business-case">Business Case</a>
+            <a href="instructions.html" class="nav-button instructions active">Instructions</a>
+            <a href="assessment.html" class="nav-button instructions">Assessment</a>
+        </div>
+    </nav>
 
-        <main class="max-w-4xl mx-auto space-y-8">
-            <!-- Project Assessment Section -->
-            <div class="section bg-white p-6 rounded-lg shadow-md">
+    <div class="max-w-4xl mx-auto space-y-8">
+        <div class="section bg-white p-6 rounded-lg shadow-md">
             <h2 class="text-xl font-semibold text-gray-800 mb-4">1. Project Assessment Framework</h2>
             <div class="space-y-4">
-                <p>Before starting your cost estimation, assess your project using the Project Assessment Framework score:</p>
+                <p>Before starting your cost estimation, assess your project using the Project Assessment Framework score. This assessment directly determines the risk adjustment percentage applied to your project costs.</p>
 
                 <table class="w-full border-collapse">
                     <thead>
@@ -91,18 +87,41 @@
                 </table>
 
                 <div class="bg-blue-50 p-4 rounded-md mt-4">
-                    <h3 class="font-medium text-blue-800 mb-2">Score Interpretation:</h3>
+                    <h3 class="font-medium text-blue-800 mb-2">Score Ranges and Impact:</h3>
                     <ul class="space-y-2">
-                        <li><span class="font-medium">21-24:</span> Full PMO management (25% risk adjustment)</li>
-                        <li><span class="font-medium">17-20:</span> Shared management between team and PMO (20% risk adjustment)</li>
-                        <li><span class="font-medium">13-16:</span> Team-led with regular PMO check-ins (15% risk adjustment)</li>
-                        <li><span class="font-medium">8-12:</span> Team-led with minimal PMO oversight (10% risk adjustment)</li>
+                        <li><span class="font-medium">21-24 points:</span> Full PMO management (25% risk adjustment)</li>
+                        <li><span class="font-medium">17-20 points:</span> Shared management between team and PMO (20% risk adjustment)</li>
+                        <li><span class="font-medium">13-16 points:</span> Team-led with regular PMO check-ins (15% risk adjustment)</li>
+                        <li><span class="font-medium">8-12 points:</span> Team-led with minimal PMO oversight (10% risk adjustment)</li>
                     </ul>
                 </div>
 
                 <div class="bg-yellow-50 p-4 rounded-md">
-                    <h3 class="font-medium text-yellow-800 mb-2">Note:</h3>
-                    <p>The total score ranges from 8 (minimum: all characteristics scored as Low) to 24 (maximum: all characteristics scored as High). The score determines both the level of PMO involvement and the risk adjustment percentage applied to the total project cost.</p>
+                    <h3 class="font-medium text-yellow-800 mb-2">Understanding Score Limits:</h3>
+                    <p>The total score ranges from 8 (minimum: all characteristics scored as Low) to 24 (maximum: all characteristics scored as High). This score determines both the level of PMO involvement and the risk adjustment percentage.</p>
+                </div>
+            </div>
+
+            <div class="mt-8 bg-green-50 p-4 rounded-md">
+                <h3 class="font-medium text-green-800 mb-2">How Risk Adjustment Works:</h3>
+                <div class="space-y-4">
+                    <p><span class="font-medium">Step 1: Complete the Assessment</span><br>
+                    Complete the Project Assessment Framework by selecting the appropriate level (Low, Medium, High) for each characteristic.</p>
+                    
+                    <p><span class="font-medium">Step 2: Score Calculation</span><br>
+                    The system automatically calculates your total score by adding points from all eight characteristics (1 point for Low, 2 for Medium, 3 for High).</p>
+                    
+                    <p><span class="font-medium">Step 3: Risk Adjustment Determination</span><br>
+                    Based on your total score, a risk adjustment percentage is automatically assigned:</p>
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li>Higher scores (21-24) receive 25% risk adjustment due to increased complexity and stakeholder involvement</li>
+                        <li>Mid-high scores (17-20) receive 20% risk adjustment for substantial complexity</li>
+                        <li>Mid-range scores (13-16) receive 15% risk adjustment for moderate complexity</li>
+                        <li>Lower scores (8-12) receive 10% risk adjustment for simpler projects</li>
+                    </ul>
+                    
+                    <p><span class="font-medium">Step 4: Cost Impact</span><br>
+                    The assigned risk adjustment percentage is automatically applied to your total project cost (sum of team costs, technology costs, and external costs) in the Cost Estimation calculator.</p>
                 </div>
             </div>
         </div>
