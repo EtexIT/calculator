@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project COMPASS - Instructions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="nav-bar">
+    <div class="flex">
+        <h1>EtexIT PMO - Project Calculator</h1>
+    </div>
+    <div class="nav-links">
+        <a href="project-assesment.html" class="nav-button cost">Assessment</a>
+        <a href="index.html" class="nav-button cost">Cost Estimation</a>
+        <a href="savings.html" class="nav-button savings">Savings</a>
+        <a href="summary.html" class="nav-button business-case">Business Case</a>
+        <a href="instructions.html" class="nav-button instructions">Instructions</a>
+        <a href="formulas.html" class="nav-button instructions">Formulas</a>
+    </div>
+</div>
+
+        <main class="max-w-4xl mx-auto space-y-8">
+            <!-- Project Assessment Section -->
+            <div class="section bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">1. Project Assessment Framework</h2>
+            <div class="space-y-4">
+                <p>Before starting your cost estimation, assess your project using the Project Assessment Framework score:</p>
+
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr>
+                            <th class="p-2 border text-left">Characteristic</th>
+                            <th class="p-2 border text-left">Low (1 point)</th>
+                            <th class="p-2 border text-left">Medium (2 points)</th>
+                            <th class="p-2 border text-left">High (3 points)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="p-2 border">Budget</td>
+                            <td class="p-2 border">< 50K</td>
+                            <td class="p-2 border">50K - 500K</td>
+                            <td class="p-2 border">> 500K</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2 border">Duration</td>
+                            <td class="p-2 border">< 3 months</td>
+                            <td class="p-2 border">3 - 12 months</td>
+                            <td class="p-2 border">> 12 months</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2 border">Team Size</td>
+                            <td class="p-2 border">< 5 members</td>
+                            <td class="p-2 border">5 - 15 members</td>
+                            <td class="p-2 border">> 15 members</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2 border">Stakeholders</td>
+                            <td class="p-2 border">Single BPO area</td>
+                            <td class="p-2 border">Multiple BPO area's</td>
+                            <td class="p-2 border">Organization-wide</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2 border">Strategic Importance</td>
+                            <td class="p-2 border">Low impact</td>
+                            <td class="p-2 border">Moderate impact</td>
+                            <td class="p-2 border">High impact on org. goals</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2 border">Complexity</td>
+                            <td class="p-2 border">Simple, well-defined</td>
+                            <td class="p-2 border">Moderate complexity</td>
+                            <td class="p-2 border">Highly complex, many variables</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2 border">Risk Level</td>
+                            <td class="p-2 border">Low risk</td>
+                            <td class="p-2 border">Moderate risk</td>
+                            <td class="p-2 border">High risk</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2 border">Regulatory Requirements</td>
+                            <td class="p-2 border">None</td>
+                            <td class="p-2 border">Some compliance needs</td>
+                            <td class="p-2 border">Strict regulatory oversight</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="bg-blue-50 p-4 rounded-md mt-4">
+                    <h3 class="font-medium text-blue-800 mb-2">Score Interpretation:</h3>
+                    <ul class="space-y-2">
+                        <li><span class="font-medium">21-24:</span> Full PMO management (25% risk adjustment)</li>
+                        <li><span class="font-medium">17-20:</span> Shared management between team and PMO (20% risk adjustment)</li>
+                        <li><span class="font-medium">13-16:</span> Team-led with regular PMO check-ins (15% risk adjustment)</li>
+                        <li><span class="font-medium">8-12:</span> Team-led with minimal PMO oversight (10% risk adjustment)</li>
+                    </ul>
+                </div>
+
+                <div class="bg-yellow-50 p-4 rounded-md">
+                    <h3 class="font-medium text-yellow-800 mb-2">Note:</h3>
+                    <p>The total score ranges from 8 (minimum: all characteristics scored as Low) to 24 (maximum: all characteristics scored as High). The score determines both the level of PMO involvement and the risk adjustment percentage applied to the total project cost.</p>
+                </div>
+            </div>
+        </div>
+
+            <!-- Cost Estimation Process -->
+            <section class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">2. Cost Estimation Process</h2>
+                
+                <div class="space-y-6">
+                    <!-- Team Costs -->
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-700 mb-2">Team Costs</h3>
+                        <div class="pl-4 border-l-4 border-orange-200">
+                            <p class="mb-2">Estimate effort for each role across three phases:</p>
+                            <ul class="list-disc list-inside space-y-2 text-gray-600">
+                                <li>
+                                    <span class="font-medium">Validation Phase:</span>
+                                    <ul class="list-none pl-6 mt-1">
+                                        <li>• Project Manager: 2-3 days per stakeholder group</li>
+                                        <li>• Solution Architecture: 3-5 days for initial assessment</li>
+                                        <li>• Business Analyst: 5-10 days for requirements gathering</li>
+                                        <li>• Developer: 2-3 days for technical feasibility</li>
+                                        <li>• Tester: 1-2 days for test strategy</li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="font-medium">Preparation Phase:</span>
+                                    <ul class="list-none pl-6 mt-1">
+                                        <li>• Project Manager: 15-20% of total project duration</li>
+                                        <li>• Solution Architecture: 10-15 days for detailed design</li>
+                                        <li>• Business Analyst: 15-20 days for detailed specifications</li>
+                                        <li>• Developer: 5-10 days for technical design</li>
+                                        <li>• Tester: 5-8 days for test planning</li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="font-medium">Execution Phase:</span>
+                                    <ul class="list-none pl-6 mt-1">
+                                        <li>• Project Manager: 20% of development effort</li>
+                                        <li>• Solution Architecture: 15% of development effort</li>
+                                        <li>• Business Analyst: 25% during development</li>
+                                        <li>• Developer: Full development time + 20% buffer</li>
+                                        <li>• Tester: 30% of development time</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Technology Costs -->
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-700 mb-2">Technology Costs</h3>
+                        <div class="pl-4 border-l-4 border-blue-200">
+                            <p class="mb-2">Include all technical infrastructure and tools:</p>
+                            <ul class="list-disc list-inside space-y-1 text-gray-600">
+                                <li>Licenses: Software licenses and subscriptions</li>
+                                <li>Infrastructure: Hardware and hosting costs</li>
+                                <li>Cloud Services: Recurring cloud platform fees</li>
+                                <li>Tools: Development and testing tools</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- External Costs -->
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-700 mb-2">External Costs</h3>
+                        <div class="pl-4 border-l-4 border-green-200">
+                            <p class="mb-2">Account for all external resources:</p>
+                            <ul class="list-disc list-inside space-y-1 text-gray-600">
+                                <li>Vendors: External service providers</li>
+                                <li>Consultants: Specialized expertise</li>
+                                <li>Training: User and team training costs</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CAPEX vs OPEX -->
+            <section class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">3. CAPEX vs OPEX Classification</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-orange-50 p-4 rounded-md">
+                        <h3 class="font-medium text-orange-800 mb-2">CAPEX Includes:</h3>
+                        <ul class="list-disc list-inside text-orange-700">
+                            <li>Team costs during preparation & execution</li>
+                            <li>One-time technology costs</li>
+                            <li>External costs</li>
+                            <li>Hardware and infrastructure investments</li>
+                        </ul>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-md">
+                        <h3 class="font-medium text-blue-800 mb-2">OPEX Includes:</h3>
+                        <ul class="list-disc list-inside text-blue-700">
+                            <li>Team costs during validation phase</li>
+                            <li>Recurring technology costs</li>
+                            <li>Monthly subscriptions and licenses</li>
+                            <li>Ongoing maintenance costs</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            <section class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">4. Monthly Cost Projection Calculation</h2>
+        
+        <div class="space-y-6">
+            <div class="prose max-w-none">
+                <h3 class="text-lg font-medium text-gray-700">S-Curve Distribution</h3>
+                <p class="text-gray-600">The monthly cost projection uses an S-curve distribution to model realistic project spending patterns. This approach reflects that project costs typically follow a sigmoid pattern where:</p>
+                
+                <div class="pl-4 border-l-4 border-purple-200 my-4">
+                    <ul class="list-disc list-inside space-y-2 text-gray-600">
+                        <li>Initial months have lower spending (project setup)</li>
+                        <li>Middle months have the highest spending rate (peak activity)</li>
+                        <li>Final months taper off (project closure)</li>
+                    </ul>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-md my-4">
+                    <h4 class="font-medium text-gray-700 mb-2">Calculation Method:</h4>
+                    <ol class="list-decimal list-inside space-y-2 text-gray-600">
+                        <li>Duration Determination:
+                            <ul class="list-disc list-inside ml-6 mt-1 text-gray-500">
+                                <li>Team days are converted to months (21 working days per month)</li>
+                                <li>Maximum duration is taken between team months and technology duration</li>
+                            </ul>
+                        </li>
+                        <li>Monthly Weight Calculation:
+                            <ul class="list-disc list-inside ml-6 mt-1 text-gray-500">
+                                <li>Uses sigmoid function: 1 / (1 + e<sup>-10(x-0.5)</sup>)</li>
+                                <li>x is the progress ratio (month / total months)</li>
+                                <li>-10 and 0.5 are curve shaping parameters</li>
+                            </ul>
+                        </li>
+                        <li>Cost Distribution:
+                            <ul class="list-disc list-inside ml-6 mt-1 text-gray-500">
+                                <li>Weights are normalized to sum to 100%</li>
+                                <li>Total project cost is distributed according to normalized weights</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </div>
+
+                <div class="bg-blue-50 p-4 rounded-md my-4">
+                    <h4 class="font-medium text-blue-800 mb-2">Example:</h4>
+                    <p class="text-blue-700">For a 6-month project with €100,000 total budget:</p>
+                    <table class="w-full mt-2 text-sm">
+                        <thead class="bg-blue-100">
+                            <tr>
+                                <th class="p-2 text-left">Month</th>
+                                <th class="p-2 text-left">Progress Ratio</th>
+                                <th class="p-2 text-left">Weight</th>
+                                <th class="p-2 text-left">Cost</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-blue-700">
+                            <tr>
+                                <td class="p-2">Month 1</td>
+                                <td class="p-2">0.08</td>
+                                <td class="p-2">10%</td>
+                                <td class="p-2">€10,000</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2">Month 2</td>
+                                <td class="p-2">0.25</td>
+                                <td class="p-2">15%</td>
+                                <td class="p-2">€15,000</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2">Month 3</td>
+                                <td class="p-2">0.42</td>
+                                <td class="p-2">25%</td>
+                                <td class="p-2">€25,000</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2">Month 4</td>
+                                <td class="p-2">0.58</td>
+                                <td class="p-2">25%</td>
+                                <td class="p-2">€25,000</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2">Month 5</td>
+                                <td class="p-2">0.75</td>
+                                <td class="p-2">15%</td>
+                                <td class="p-2">€15,000</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2">Month 6</td>
+                                <td class="p-2">0.92</td>
+                                <td class="p-2">10%</td>
+                                <td class="p-2">€10,000</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="bg-yellow-50 p-4 rounded-md">
+                    <h4 class="font-medium text-yellow-800 mb-2">Key Benefits:</h4>
+                    <ul class="list-disc list-inside text-yellow-700 space-y-1">
+                        <li>More realistic than linear distribution</li>
+                        <li>Accounts for project ramp-up and wind-down periods</li>
+                        <li>Helps with cash flow planning</li>
+                        <li>Better matches typical resource utilization patterns</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+            
+            
+
+            <!-- Tips and Best Practices -->
+            <section class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">5. Tips and Best Practices</h2>
+                <div class="space-y-4">
+                    <div class="bg-yellow-50 p-4 rounded-md">
+                        <ul class="list-disc list-inside text-yellow-800 space-y-2">
+                            <li>Always include contingency in team and external costs</li>
+                            <li>Consider dependencies between different project phases</li>
+                            <li>Account for regional differences in daily rates</li>
+                            <li>Review historical data from similar projects when available</li>
+                            <li>Document all assumptions made during estimation</li>
+                            <li>Consider the impact of project risks on cost estimates</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="max-w-4xl mx-auto mt-8 pt-4 border-t border-gray-200">
+            <p class="text-gray-500 text-center">For additional support or questions, contact the PMO team.</p>
+        </footer>
+    </div>
+</body>
+</html>
