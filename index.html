@@ -13,6 +13,7 @@
         <div class="space-y-4">
             <h1>EtexIT PMO - Project Calculator</h1>
             <div class="nav-links">
+                <a href="project-assesment.html" class="nav-button cost">Assessment</a>
                 <a href="index.html" class="nav-button cost">Cost Estimation</a>
                 <a href="savings.html" class="nav-button savings">Savings</a>
                 <a href="summary.html" class="nav-button business-case active">Business Case</a>
@@ -241,19 +242,13 @@
 <!-- Risk Adjustment Section -->
 <div class="section risk-section">
     <h2 class="section-title">Risk Adjustment</h2>
+    
     <div class="form-group">
-        <label for="riskScore">
-            Project Assessment Framework Score
-            <span class="tooltip" data-tooltip="Based on Project Assessment Framework evaluation">ⓘ</span>
-        </label>
-        <select id="riskScore" class="risk-dropdown">
-            <option value="10">8-13 (10% adjustment)</option>
-            <option value="15">14-19 (15% adjustment)</option>
-            <option value="20">20-24 (20% adjustment)</option>
-            <option value="25">25+ (25% adjustment)</option>
-        </select>
+        <div id="riskScore" class="text-lg font-medium mt-2">10% adjustment (Score: 8-13)</div>
+        <div class="text-sm text-gray-600 mt-1">Complete the Project Assessment Framework to adjust this value</div>
     </div>
-    <div id="riskAdjustment" class="risk-amount">€0.00</div>
+
+    <div id="riskAdjustment" class="risk-amount"></div>
 </div>
 
 <!-- Charts Section -->
