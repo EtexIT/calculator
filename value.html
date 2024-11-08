@@ -1,0 +1,213 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Cost Estimator</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-logo">
+                <img src="Logo.svg" alt="Etex Logo" width="309" height="73">
+            </div>
+            <div class="nav-links-left">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="assessment.html" class="nav-link">Project Assessment</a>
+                <a href="costs.html" class="nav-link">Costs</a>
+                <a href="value.html" class="nav-link active">Value</a>
+                <a href="business-case.html" class="nav-link">Business Case</a>
+            </div>
+            <div class="nav-links-right">
+                <a href="instructions.html" class="nav-link">Instructions</a>
+                <a href="formulas.html" class="nav-link">Formulas</a>
+            </div>
+        </nav>
+    </header>
+    <main class="content">
+        <div class="value-container">
+            <h1>Project Value Estimation</h1>
+
+            <!-- Project Info Section -->
+            <section class="section project-summary">
+                <h2>Project Information</h2>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <label>Project Name:</label>
+                        <span id="summaryProjectName">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <label>Project Owner:</label>
+                        <span id="summaryProjectOwner">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <label>Division/Department:</label>
+                        <span id="summaryDepartment">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <label>Estimated By:</label>
+                        <span id="summaryEstimatedBy">-</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- One-off Value Section -->
+            <section class="section value-section">
+                <h2>One-off Value</h2>
+                <table class="value-table" id="oneOffTable">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Amount (€)</th>
+                            <th>Description</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Hardware savings</td>
+                            <td><input type="number" class="amount"></td>
+                            <td><input type="text" class="description"></td>
+                            <td class="total">€0.00</td>
+                        </tr>
+                        <tr>
+                            <td>Inventory reduction</td>
+                            <td><input type="number" class="amount"></td>
+                            <td><input type="text" class="description"></td>
+                            <td class="total">€0.00</td>
+                        </tr>
+                        <tr>
+                            <td>Asset sale</td>
+                            <td><input type="number" class="amount"></td>
+                            <td><input type="text" class="description"></td>
+                            <td class="total">€0.00</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3"><strong>Total One-off Value:</strong></td>
+                            <td id="totalOneOffValue" class="total">€0.00</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </section>
+
+            <!-- Recurring Value Section -->
+            <section class="section value-section">
+                <h2>Recurring Value</h2>
+                <table class="value-table" id="recurringTable">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Year 1 (€)</th>
+                            <th>Year 2 (€)</th>
+                            <th>Year 3 (€)</th>
+                            <th>Year 4 (€)</th>
+                            <th>Year 5 (€)</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>License cost reduction</td>
+                            <td><input type="number" class="year1"></td>
+                            <td><input type="number" class="year2"></td>
+                            <td><input type="number" class="year3"></td>
+                            <td><input type="number" class="year4"></td>
+                            <td><input type="number" class="year5"></td>
+                            <td><input type="text" class="description"></td>
+                        </tr>
+                        <tr>
+                            <td>Maintenance savings</td>
+                            <td><input type="number" class="year1"></td>
+                            <td><input type="number" class="year2"></td>
+                            <td><input type="number" class="year3"></td>
+                            <td><input type="number" class="year4"></td>
+                            <td><input type="number" class="year5"></td>
+                            <td><input type="text" class="description"></td>
+                        </tr>
+                        <tr>
+                            <td>Efficiency gains (FTE)</td>
+                            <td><input type="number" class="year1"></td>
+                            <td><input type="number" class="year2"></td>
+                            <td><input type="number" class="year3"></td>
+                            <td><input type="number" class="year4"></td>
+                            <td><input type="number" class="year5"></td>
+                            <td><input type="text" class="description"></td>
+                        </tr>
+                        <tr>
+                            <td>Other value</td>
+                            <td><input type="number" class="year1"></td>
+                            <td><input type="number" class="year2"></td>
+                            <td><input type="number" class="year3"></td>
+                            <td><input type="number" class="year4"></td>
+                            <td><input type="number" class="year5"></td>
+                            <td><input type="text" class="description"></td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td><strong>Yearly Totals:</strong></td>
+                            <td id="year1Total" class="total">€0.00</td>
+                            <td id="year2Total" class="total">€0.00</td>
+                            <td id="year3Total" class="total">€0.00</td>
+                            <td id="year4Total" class="total">€0.00</td>
+                            <td id="year5Total" class="total">€0.00</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </section>
+
+            <!-- Value Summary Section -->
+            <section class="section value-summary">
+                <h2>Value Summary</h2>
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <div class="summary-label">Total One-off Value</div>
+                        <div id="summaryOneOffValue" class="summary-value">€0.00</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">Total Recurring Value (5 years)</div>
+                        <div id="summaryRecurringValue" class="summary-value">€0.00</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">Total Project Value</div>
+                        <div id="totalProjectValue" class="summary-value">€0.00</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Section -->
+            <section class="section charts-section">
+                <div class="charts-container">
+                    <div class="chart-wrapper">
+                        <h3>Value Flow</h3>
+                        <canvas id="valueFlowChart"></canvas>
+                    </div>
+                    <div class="chart-wrapper">
+                        <h3>Accumulated Value</h3>
+                        <canvas id="accumulatedValueChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button id="saveValue" class="btn-primary">Save</button>
+                <button id="resetValue" class="btn-secondary">Reset</button>
+                <button id="nextButton" class="btn-primary" disabled>Next Step</button>
+            </div>
+        </div>
+    </main>
+    <script src="value.js"></script>
+</body>
+</html>

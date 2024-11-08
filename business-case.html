@@ -1,0 +1,127 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Cost Estimator</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-logo">
+                <img src="Logo.svg" alt="Etex Logo" width="309" height="73">
+            </div>
+            <div class="nav-links-left">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="assessment.html" class="nav-link">Project Assessment</a>
+                <a href="costs.html" class="nav-link">Costs</a>
+                <a href="value.html" class="nav-link">Value</a>
+                <a href="business-case.html" class="nav-link active">Business Case</a>
+            </div>
+            <div class="nav-links-right">
+                <a href="instructions.html" class="nav-link">Instructions</a>
+                <a href="formulas.html" class="nav-link">Formulas</a>
+            </div>
+        </nav>
+    </header>
+    <main class="content">
+        <div class="business-case-container">
+            <h1>Business Case Summary</h1>
+
+            <!-- Project Info Section -->
+            <section class="section project-summary">
+                <h2>Project Information</h2>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <label>Project Name:</label>
+                        <span id="summaryProjectName">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <label>Project Owner:</label>
+                        <span id="summaryProjectOwner">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <label>Division/Department:</label>
+                        <span id="summaryDepartment">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <label>Estimated By:</label>
+                        <span id="summaryEstimatedBy">-</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Key Metrics Section -->
+            <section class="metrics-grid">
+                <div class="metric-card">
+                    <h3>Return on Investment</h3>
+                    <div id="roiValue" class="metric-value">0%</div>
+                    <div class="metric-subtitle">Over 5 years</div>
+                </div>
+
+                <div class="metric-card">
+                    <h3>Payback Period</h3>
+                    <div id="paybackPeriod" class="metric-value">0 years</div>
+                    <div class="metric-subtitle">Time to break even</div>
+                </div>
+
+                <div class="metric-card">
+                    <h3>Net Benefit</h3>
+                    <div id="netBenefit" class="metric-value">€0.00</div>
+                    <div class="metric-subtitle">Total value - Total costs</div>
+                </div>
+            </section>
+
+            <!-- 5 Year Overview Table -->
+            <section class="section">
+                <h2>5 Year Financial Overview</h2>
+                <div class="table-container">
+                    <table id="financialOverview" class="business-case-table">
+                        <thead>
+                            <tr>
+                                <th>Year</th>
+                                <th>Costs</th>
+                                <th>One-off Value</th>
+                                <th>Recurring Value</th>
+                                <th>Net Cash Flow</th>
+                                <th>Accumulated Benefit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Charts Section -->
+            <section class="section charts-section">
+                <div class="charts-container">
+                    <div class="chart-wrapper">
+                        <h3>Cash Flow Analysis</h3>
+                        <canvas id="cashFlowChart"></canvas>
+                    </div>
+                    <div class="chart-wrapper">
+                        <h3>Accumulated Benefit</h3>
+                        <canvas id="accumulatedBenefitChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Export & Share Section -->
+            <div class="action-buttons">
+                <button id="saveBusinessCase" class="btn-primary">Save Business Case</button>
+                <button id="resetBusinessCase" class="btn-secondary">Reset</button>
+                <button id="exportPDF" class="btn-secondary">Export PDF</button>
+            </div>
+        </div>
+    </main>
+    <script src="business-case.js"></script>
+</body>
+</html>

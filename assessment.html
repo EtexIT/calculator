@@ -1,0 +1,238 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Cost Estimator</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="stylesheet" href="styles.css">
+   
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-logo">
+                <img src="Logo.svg" alt="Etex Logo" width="309" height="73">
+            </div>
+            <div class="nav-links-left">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="assessment.html" class="nav-link active">Project Assessment</a>
+                <a href="costs.html" class="nav-link">Costs</a>
+                <a href="value.html" class="nav-link">Value</a>
+                <a href="business-case.html" class="nav-link">Business Case</a>
+            </div>
+            <div class="nav-links-right">
+                <a href="instructions.html" class="nav-link">Instructions</a>
+                <a href="formulas.html" class="nav-link">Formulas</a>
+            </div>
+        </nav>
+    </header>
+    <main class="content">
+        <div class="assessment-container">
+            <h1>Project Assessment Framework</h1>
+
+            <section class="project-info">
+                <h2>Project Information</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="projectName">Project Name*</label>
+                        <input type="text" id="projectName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectOwner">Project Owner*</label>
+                        <input type="text" id="projectOwner" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="department">Division/Department*</label>
+                        <input type="text" id="department" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Date*</label>
+                        <input type="date" id="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="estimatedBy">Estimated By*</label>
+                        <input type="text" id="estimatedBy" required>
+                    </div>
+                </div>
+            </section>
+
+            <section class="assessment-grid">
+                <h2>Project Characteristics Assessment</h2>
+                <table class="assessment-table">
+                    <thead>
+                        <tr>
+                            <th>Characteristic</th>
+                            <th>Low (1 point)</th>
+                            <th>Medium (2 points)</th>
+                            <th>High (3 points)</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Budget</td>
+                            <td>< 50K</td>
+                            <td>50K - 500K</td>
+                            <td>> 500K</td>
+                            <td>
+                                <select class="score-select" id="scoreBudget">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Duration</td>
+                            <td>< 3 months</td>
+                            <td>3 - 12 months</td>
+                            <td>> 12 months</td>
+                            <td>
+                                <select class="score-select" id="scoreDuration">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Team Size</td>
+                            <td>< 5 members</td>
+                            <td>5 - 15 members</td>
+                            <td>> 15 members</td>
+                            <td>
+                                <select class="score-select" id="scoreTeamSize">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Stakeholders</td>
+                            <td>Single BPO area</td>
+                            <td>Multiple BPO area's</td>
+                            <td>Organization-wide</td>
+                            <td>
+                                <select class="score-select" id="scoreStakeholders">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Strategic Importance</td>
+                            <td>Low impact</td>
+                            <td>Moderate impact</td>
+                            <td>High impact on org. goals</td>
+                            <td>
+                                <select class="score-select" id="scoreStrategic">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Complexity</td>
+                            <td>Simple, well-defined</td>
+                            <td>Moderate complexity</td>
+                            <td>Highly complex, many variables</td>
+                            <td>
+                                <select class="score-select" id="scoreComplexity">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Risk Level</td>
+                            <td>Low risk</td>
+                            <td>Moderate risk</td>
+                            <td>High risk</td>
+                            <td>
+                                <select class="score-select" id="scoreRisk">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Regulatory Requirements</td>
+                            <td>None</td>
+                            <td>Some compliance needs</td>
+                            <td>Strict regulatory oversight</td>
+                            <td>
+                                <select class="score-select" id="scoreRegulatory">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4"><strong>Total Score</strong></td>
+                            <td id="totalScore">8</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </section>
+
+            <section class="assessment-results">
+                <h2>Assessment Outcomes</h2>
+
+                <div class="results-container">
+                    <div class="result-card risk-adjustment">
+                        <h3>1. Risk Adjustment</h3>
+                        <div class="result-content">
+                            <div class="score-display">
+                                <label>Total Assessment Score:</label>
+                                <div id="totalScore" class="highlight">8</div>
+                            </div>
+                            <div class="adjustment-display">
+                                <label>Risk Adjustment Factor:</label>
+                                <div id="riskAdjustment" class="highlight">-</div>
+                            </div>
+                            <p class="explanation">
+                                This risk adjustment factor should be applied to the total project cost
+                                to account for the identified risk level.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="result-card pmo-approach">
+                        <h3>2. PMO Approach</h3>
+                        <div class="result-content">
+                            <div class="approach-name">
+                                <label>Recommended Approach:</label>
+                                <div id="recommendedApproach" class="highlight">-</div>
+                            </div>
+                            <div class="approach-details">
+                                <label>What this means:</label>
+                                <ul id="pmoInvolvement" class="involvement-list">
+                                    <!-- Populated by JavaScript -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="action-buttons">
+                <button id="saveAssessment" class="btn-primary">Save Assessment</button>
+                <button id="resetAssessment" class="btn-secondary">Reset</button>
+                <button id="nextButton" class="btn-primary" disabled>Next Step</button>
+            </div>
+        </div>
+    </main>
+    <script src="assessment.js"></script>
+</body>
+</html>

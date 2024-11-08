@@ -1,0 +1,336 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Cost Estimator</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-logo">
+                <img src="Logo.svg" alt="Etex Logo" width="309" height="73">
+            </div>
+            <div class="nav-links-left">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="assessment.html" class="nav-link">Project Assessment</a>
+                <a href="costs.html" class="nav-link active">Costs</a>
+                <a href="value.html" class="nav-link">Value</a>
+                <a href="business-case.html" class="nav-link">Business Case</a>
+            </div>
+            <div class="nav-links-right">
+                <a href="instructions.html" class="nav-link">Instructions</a>
+                <a href="formulas.html" class="nav-link">Formulas</a>
+            </div>
+        </nav>
+    </header>
+    <main class="content">
+        <div class="costs-container">
+            <h1>Project Cost Estimation</h1>
+
+            <!-- Project Summary Section -->
+            <section class="project-summary">
+                <h2>Project Information</h2>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <label>Project Name:</label>
+                        <span id="summaryProjectName">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <label>Project Owner:</label>
+                        <span id="summaryProjectOwner">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <label>Division/Department:</label>
+                        <span id="summaryDepartment">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <label>Estimated By:</label>
+                        <span id="summaryEstimatedBy">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <label>Risk Adjustment:</label>
+                        <span id="summaryRiskAdjustment">-</span>
+                    </div>
+                </div>
+                <div class="capex-section">
+                    <label for="isCapexProject" class="capex-label">
+                        <input type="checkbox" id="isCapexProject" class="capex-checkbox">
+                        Central CAPEX Project
+                    </label>
+                    <span class="capex-tooltip" title="CAPEX includes team costs during scoping & execution, one-time technology costs, and external costs">ⓘ</span>
+                </div>
+            </section>
+
+            <!-- Team Costs Section -->
+            <section class="cost-section">
+                <h2>Team Costs</h2>
+                <table class="cost-table" id="teamCostsTable">
+                    <thead>
+                        <tr>
+                            <th>Role</th>
+                            <th># Persons</th>
+                            <th>Daily Rate (€)</th>
+                            <th>Days - Validation</th>
+                            <th>Days - Scoping</th>
+                            <th>Days - Execution</th>
+                            <th>Contingency (%)</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Project Manager</td>
+                            <td><input type="number" class="persons" min="0" step="1"></td>
+                            <td><input type="number" class="rate" min="0" value="800"></td>
+                            <td><input type="number" class="days-validation" min="0"></td>
+                            <td><input type="number" class="days-scoping" min="0"></td>
+                            <td><input type="number" class="days-execution" min="0"></td>
+                            <td><input type="number" class="contingency" min="0" max="100" value="10"></td>
+                            <td class="total">€0.00</td>
+                        </tr>
+                        <tr>
+                            <td>Solution Architecture</td>
+                            <td><input type="number" class="persons" min="0" step="1"></td>
+                            <td><input type="number" class="rate" min="0" value="800"></td>
+                            <td><input type="number" class="days-validation" min="0"></td>
+                            <td><input type="number" class="days-scoping" min="0"></td>
+                            <td><input type="number" class="days-execution" min="0"></td>
+                            <td><input type="number" class="contingency" min="0" max="100" value="10"></td>
+                            <td class="total">€0.00</td>
+                        </tr>
+                        <tr>
+                            <td>Business Analyst</td>
+                            <td><input type="number" class="persons" min="0" step="1"></td>
+                            <td><input type="number" class="rate" min="0" value="800"></td>
+                            <td><input type="number" class="days-validation" min="0"></td>
+                            <td><input type="number" class="days-scoping" min="0"></td>
+                            <td><input type="number" class="days-execution" min="0"></td>
+                            <td><input type="number" class="contingency" min="0" max="100" value="10"></td>
+                            <td class="total">€0.00</td>
+                        </tr>
+                        <tr>
+                            <td>Developer</td>
+                            <td><input type="number" class="persons" min="0" step="1"></td>
+                            <td><input type="number" class="rate" min="0" value="800"></td>
+                            <td><input type="number" class="days-validation" min="0"></td>
+                            <td><input type="number" class="days-scoping" min="0"></td>
+                            <td><input type="number" class="days-execution" min="0"></td>
+                            <td><input type="number" class="contingency" min="0" max="100" value="10"></td>
+                            <td class="total">€0.00</td>
+                        </tr>
+                        <tr>
+                            <td>Tester</td>
+                            <td><input type="number" class="persons" min="0" step="1"></td>
+                            <td><input type="number" class="rate" min="0" value="800"></td>
+                            <td><input type="number" class="days-validation" min="0"></td>
+                            <td><input type="number" class="days-scoping" min="0"></td>
+                            <td><input type="number" class="days-execution" min="0"></td>
+                            <td><input type="number" class="contingency" min="0" max="100" value="10"></td>
+                            <td class="total">€0.00</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="7"><strong>Total Team Costs:</strong></td>
+                            <td id="totalTeamCosts">€0.00</td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <div class="phase-distribution">
+                    <h3>Phase Cost Distribution</h3>
+                    <div class="phase-grid">
+                        <div class="phase-card">
+                            <div class="phase-title">Validation Phase</div>
+                            <div id="validationPhaseCost" class="phase-amount">€0.00</div>
+                        </div>
+                        <div class="phase-card">
+                            <div class="phase-title">Scoping Phase</div>  <!-- Changed from Preparation Phase -->
+                            <div id="scopingPhaseCost" class="phase-amount">€0.00</div>  <!-- Changed from preparationPhaseCost -->
+                        </div>
+                        <div class="phase-card">
+                            <div class="phase-title">Execution Phase</div>
+                            <div id="executionPhaseCost" class="phase-amount">€0.00</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Technology Costs Section -->
+            <section class="section cost-section">
+                <h2>Technology Costs</h2>
+                <table id="techCostsTable" class="cost-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>One-time Cost (€)</th>
+                            <th>Monthly Cost (€)</th>
+                            <th>Duration (Months)</th>
+                            <th>Description</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Licenses</td>
+                            <td><input type="number" class="tech-onetime" /></td>
+                            <td><input type="number" class="tech-monthly" /></td>
+                            <td><input type="number" class="tech-duration" /></td>
+                            <td><input type="text" class="description" /></td>
+                            <td class="total">€0.00</td>
+                        </tr>
+                        <tr>
+                            <td>Infrastructure</td>
+                            <td><input type="number" class="tech-onetime" /></td>
+                            <td><input type="number" class="tech-monthly" /></td>
+                            <td><input type="number" class="tech-duration" /></td>
+                            <td><input type="text" class="description" /></td>
+                            <td class="total">€0.00</td>
+                        </tr>
+                        <tr>
+                            <td>Cloud Services</td>
+                            <td><input type="number" class="tech-onetime" /></td>
+                            <td><input type="number" class="tech-monthly" /></td>
+                            <td><input type="number" class="tech-duration" /></td>
+                            <td><input type="text" class="description" /></td>
+                            <td class="total">€0.00</td>
+                        </tr>
+                        <tr>
+                            <td>Tools</td>
+                            <td><input type="number" class="tech-onetime" /></td>
+                            <td><input type="number" class="tech-monthly" /></td>
+                            <td><input type="number" class="tech-duration" /></td>
+                            <td><input type="text" class="description" /></td>
+                            <td class="total">€0.00</td>
+                        </tr>
+                        <tr>
+                            <td>Data Migration</td>
+                            <td><input type="number" class="tech-onetime" /></td>
+                            <td><input type="number" class="tech-monthly" /></td>
+                            <td><input type="number" class="tech-duration" /></td>
+                            <td><input type="text" class="description" /></td>
+                            <td class="total">€0.00</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="5"><strong>Total Technology Costs:</strong></td>
+                            <td id="totalTechCosts">€0.00</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </section>
+
+            <!-- External Costs Section -->
+            <section class="cost-section">
+                <h2>External Costs</h2>
+                <table class="cost-table" id="externalCostsTable">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Cost (€)</th>
+                            <th>Contingency (%)</th>
+                            <th>Total with Contingency</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Vendors</td>
+                            <td><input type="number" class="external-cost" min="0"></td>
+                            <td><input type="number" class="external-contingency" min="0" max="100"></td>
+                            <td class="total">€0.00</td>
+                        </tr>
+                        <tr>
+                            <td>Consultants</td>
+                            <td><input type="number" class="external-cost" min="0"></td>
+                            <td><input type="number" class="external-contingency" min="0" max="100"></td>
+                            <td class="total">€0.00</td>
+                        </tr>
+                        <tr>
+                            <td>Training & expenses</td>
+                            <td><input type="number" class="external-cost" min="0"></td>
+                            <td><input type="number" class="external-contingency" min="0" max="100"></td>
+                            <td class="total">€0.00</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3"><strong>Total External Costs:</strong></td>
+                            <td id="totalExternalCosts">€0.00</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </section>
+
+            <!-- Cost Summary Section -->
+            <section class="cost-summary">
+                <h2>Cost Summary</h2>
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <div class="summary-label">Team Costs</div>
+                        <div id="summaryTeamCosts" class="summary-value">€0.00</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">Technology Costs</div>
+                        <div id="summaryTechCosts" class="summary-value">€0.00</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">External Costs</div>
+                        <div id="summaryExternalCosts" class="summary-value">€0.00</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">Risk Adjusted Amount</div>
+                        <div id="summaryRiskAmount" class="summary-value">€0.00</div>
+                    </div>
+                </div>
+
+                <div class="cost-classification">
+                    <h3>Cost Classification</h3>
+                    <div class="classification-grid">
+                        <div class="cost-type-card">
+                            <div class="cost-type-label">CAPEX</div>
+                            <div id="capexTotal" class="cost-type-value">€0.00</div>
+                        </div>
+                        <div class="cost-type-card">
+                            <div class="cost-type-label">OPEX</div>
+                            <div id="opexTotal" class="cost-type-value">€0.00</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="total-cost">
+                    <div class="total-label">Total Estimated Cost</div>
+                    <div id="totalCost" class="total-value">€0.00</div>
+                </div>
+            </section>
+
+            <section class="section charts-section">
+                <div class="charts-container">
+                    <div class="chart-wrapper">
+                        <h3>Cost Distribution</h3>
+                        <canvas id="costDistributionChart"></canvas>
+                    </div>
+                    <div class="chart-wrapper">
+                        <h3>Phase Distribution</h3>
+                        <canvas id="phaseDistributionChart"></canvas>
+                    </div>
+                </div>
+            </section>
+            
+            <div class="action-buttons">
+                <button id="saveCosts" class="btn-primary">Save</button>
+                <button id="resetCosts" class="btn-secondary">Reset</button>
+                <button id="nextButton" class="btn-primary" disabled>Next Step</button>
+            </div>
+        </div>
+    </main>
+    <script src="costs.js"></script>
+</body>
+</html>

@@ -1,0 +1,341 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Cost Estimator</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="stylesheet" href="styles.css">
+    
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-logo">
+                <img src="Logo.svg" alt="Etex Logo" width="309" height="73">
+            </div>
+            <div class="nav-links-left">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="assessment.html" class="nav-link">Project Assessment</a>
+                <a href="costs.html" class="nav-link">Costs</a>
+                <a href="value.html" class="nav-link">Value</a>
+                <a href="business-case.html" class="nav-link">Business Case</a>
+            </div>
+            <div class="nav-links-right">
+                <a href="instructions.html" class="nav-link">Instructions</a>
+                <a href="formulas.html" class="nav-link active">Formulas</a>
+            </div>
+        </nav>
+    </header>
+    <main class="content">
+    <div class="formulas-container">
+        <h1>Project Assessment Formulas</h1>
+
+        <section class="formula-section">
+            <h2>Score Calculation</h2>
+            <div class="formula-card">
+                <h3>Total Assessment Score</h3>
+                <p class="formula">Total Score = Sum of all characteristic scores</p>
+                <div class="formula-explanation">
+                    <p>Where:</p>
+                    <ul>
+                        <li>Each characteristic is scored 1, 2, or 3 points</li>
+                        <li>Minimum possible score: 8 (all characteristics scored as 1)</li>
+                        <li>Maximum possible score: 24 (all characteristics scored as 3)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="formula-section">
+            <h2>Risk Adjustment Determination</h2>
+            <div class="formula-card">
+                <h3>Risk Adjustment Percentage</h3>
+                <p class="formula-table">
+                    Risk Adjustment = {<br>
+                    &nbsp;&nbsp;25% if total score ≥ 21<br>
+                    &nbsp;&nbsp;20% if 17 ≤ total score < 21<br>
+                    &nbsp;&nbsp;15% if 13 ≤ total score < 17<br>
+                    &nbsp;&nbsp;10% if total score < 13<br>
+                    }
+                </p>
+            </div>
+        </section>
+
+        <section class="formula-section">
+            <h2>PMO Approach Determination</h2>
+            <div class="formula-card">
+                <h3>Management Approach Selection</h3>
+                <p class="formula-table">
+                    PMO Approach = {<br>
+                    &nbsp;&nbsp;"Full PMO management" if total score ≥ 21<br>
+                    &nbsp;&nbsp;"Shared management" if 17 ≤ total score < 21<br>
+                    &nbsp;&nbsp;"Team-led with regular check-ins" if 13 ≤ total score < 17<br>
+                    &nbsp;&nbsp;"Team-led with minimal oversight" if total score < 13<br>
+                    }
+                </p>
+            </div>
+        </section>
+
+        <section class="formula-section">
+            <h2>Application in Cost Calculations</h2>
+            <div class="formula-card">
+                <h3>Adjusted Project Cost</h3>
+                <p class="formula">Adjusted Cost = Base Cost × (1 + Risk Adjustment Percentage)</p>
+                <div class="formula-explanation">
+                    <p>Example:</p>
+                    <ul>
+                        <li>Base Cost: €100,000</li>
+                        <li>Risk Adjustment: 20%</li>
+                        <li>Adjusted Cost = €100,000 × (1 + 0.20) = €120,000</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        <section class="formula-section">
+            <h2>Team Cost Calculations</h2>
+            <div class="formula-card">
+                <h3>Per Role Cost Formula</h3>
+                <div class="formula">
+                    Role Cost = Daily Rate × Number of Days × Number of Persons × (1 + Contingency%)
+                </div>
+                <p>Applied separately for each phase (Validation, Scoping, Execution)</p>
+            </div>
+        </section>
+
+        <section class="formula-section">
+            <h2>Technology Cost Calculations</h2>
+            <div class="formula-card">
+                <h3>One-time Technology Costs</h3>
+                <div class="formula">
+                    One-time Cost = Sum of all one-time investments
+                </div>
+
+                <h3>Recurring Technology Costs</h3>
+                <div class="formula">
+                    Recurring Cost = Monthly Cost × Number of Months
+                </div>
+            </div>
+        </section>
+
+        <section class="formula-section">
+            <h2>External Cost Calculations</h2>
+            <div class="formula-card">
+                <div class="formula">
+                    External Cost with Contingency = Base Cost × (1 + Contingency%)
+                </div>
+            </div>
+        </section>
+
+        <section class="formula-section">
+            <h2>Risk Adjustment</h2>
+            <div class="formula-card">
+                <div class="formula">
+                    Risk Adjusted Cost = Base Cost × (1 + Risk Adjustment%)
+                </div>
+                <div class="formula-explanation">
+                    Where Risk Adjustment% is based on Assessment Framework score:
+                    <ul>
+                        <li>21-24 points: 25% adjustment</li>
+                        <li>17-20 points: 20% adjustment</li>
+                        <li>13-16 points: 15% adjustment</li>
+                        <li>8-12 points: 10% adjustment</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="formula-section">
+            <h2>CAPEX/OPEX Calculations</h2>
+            <div class="formula-card">
+                <h3>CAPEX Components</h3>
+                <div class="formula">
+                    CAPEX = Scoping Phase Costs + Execution Phase Costs + One-time Tech Costs + External Costs
+                </div>
+
+                <h3>OPEX Components</h3>
+                <div class="formula">
+                    OPEX = Validation Phase Costs + Recurring Tech Costs
+                </div>
+
+                <h3>Risk Distribution</h3>
+                <div class="formula">
+                    Risk Amount Distribution = Total Risk × (Component Cost / Total Cost)
+                </div>
+            </div>
+        </section>
+        <section class="formula-section">
+            <h2>Value Calculations</h2>
+            
+            <div class="formula-card">
+                <h3>One-off Value Total</h3>
+                <div class="formula">
+                    Total One-off Value = ∑(Hardware savings + Inventory reduction + Asset sale)
+                </div>
+            </div>
+        
+            <div class="formula-card">
+                <h3>Yearly Recurring Value</h3>
+                <div class="formula">
+                    Yearly Value = ∑(License reductions + Maintenance savings + Efficiency gains + Other value)
+                </div>
+                <div class="formula-explanation">
+                    Calculated separately for each year (Years 1-5)
+                </div>
+            </div>
+        
+            <div class="formula-card">
+                <h3>Total Recurring Value</h3>
+                <div class="formula">
+                    Total Recurring Value = ∑(Year 1 + Year 2 + Year 3 + Year 4 + Year 5)
+                </div>
+            </div>
+        
+            <div class="formula-card">
+                <h3>Total Project Value</h3>
+                <div class="formula">
+                    Total Project Value = Total One-off Value + Total Recurring Value
+                </div>
+            </div>
+        
+            <div class="formula-card">
+                <h3>Value Flow Chart Calculation</h3>
+                <div class="formula">
+                    Year 1 Total = One-off Value + Year 1 Recurring Value
+                    Subsequent Years = Yearly Recurring Value
+                </div>
+            </div>
+        
+            <div class="formula-card">
+                <h3>Accumulated Value Calculation</h3>
+                <div class="formula">
+                    Accumulated Value(Year N) = One-off Value + ∑(Recurring Value Years 1 to N)
+                </div>
+                <div class="formula-explanation">
+                    Where N is the year number (1-5)
+                </div>
+            </div>
+        
+            <div class="formula-card">
+                <h3>FTE Value Calculation Guide</h3>
+                <div class="formula">
+                    FTE Value = (Hours Saved per Year × Average Hourly Rate) / Annual Working Hours
+                </div>
+                <div class="formula-explanation">
+                    Where:
+                    <ul>
+                        <li>Annual Working Hours = 1,720 (standard FTE hours)</li>
+                        <li>Average Hourly Rate should be based on local market rates</li>
+                        <li>Hours Saved should be validated with process owners</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        <section class="section formula-section">
+            <h2>Value Calculations</h2>
+            <div class="formula-card">
+                <h3>One-off Value Total</h3>
+                <div class="formula">
+                    Total One-off Value = ∑(Hardware savings + Inventory reduction + Asset sale + Other one-time benefits)
+                </div>
+            </div>
+        
+            <div class="formula-card">
+                <h3>Yearly Recurring Value</h3>
+                <div class="formula">
+                    Yearly Value = ∑(License reductions + Maintenance savings + Efficiency gains + Process improvements + Cost avoidance)
+                </div>
+                <div class="formula-explanation">
+                    Calculated separately for each year (Years 1-5)
+                </div>
+            </div>
+        
+            <div class="formula-card">
+                <h3>Total Recurring Value</h3>
+                <div class="formula">
+                    Total Recurring Value = ∑(Year 1 + Year 2 + Year 3 + Year 4 + Year 5)
+                </div>
+            </div>
+        
+            <div class="formula-card">
+                <h3>Total Project Value</h3>
+                <div class="formula">
+                    Total Project Value = Total One-off Value + Total Recurring Value
+                </div>
+            </div>
+        </section>
+        
+        <section class="section formula-section">
+            <h2>Business Case Metrics</h2>
+            <div class="formula-card">
+                <h3>Return on Investment (ROI)</h3>
+                <div class="formula">
+                    ROI = ((Total Benefits - Total Costs) / Total Costs) × 100%
+                </div>
+                <div class="formula-explanation">
+                    Where:
+                    <ul>
+                        <li>Total Benefits = Total Project Value over 5 years</li>
+                        <li>Total Costs = Risk-adjusted total cost</li>
+                    </ul>
+                </div>
+            </div>
+        
+            <div class="formula-card">
+                <h3>Payback Period</h3>
+                <div class="formula">
+                    Payback Period = Time until Accumulated Benefits ≥ Total Costs
+                </div>
+                <div class="formula-explanation">
+                    Where:
+                    <ul>
+                        <li>Accumulated Benefits = Cumulative sum of benefits per year</li>
+                        <li>Benefits include both one-off and recurring values</li>
+                    </ul>
+                </div>
+            </div>
+        
+            <div class="formula-card">
+                <h3>Net Benefit</h3>
+                <div class="formula">
+                    Net Benefit = Total Project Value - Total Risk-Adjusted Cost
+                </div>
+            </div>
+        </section>
+        
+        <section class="section formula-section">
+            <h2>Efficiency Gains Calculation</h2>
+            <div class="formula-card">
+                <h3>FTE Value Calculation</h3>
+                <div class="formula">
+                    FTE Value = (Hours Saved per Year × Average Hourly Rate) / Annual Working Hours
+                </div>
+                <div class="formula-explanation">
+                    Where:
+                    <ul>
+                        <li>Annual Working Hours = 1,720 (standard FTE hours)</li>
+                        <li>Average Hourly Rate based on local market rates</li>
+                        <li>Hours Saved validated with process owners</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section formula-section">
+            <h2>Accumulated Benefit</h2>
+            <div class="formula-card">
+                <h3>Year-over-Year Accumulation</h3>
+                <div class="formula">
+                    Accumulated Value(Year N) = One-off Value + ∑(Recurring Value Years 1 to N)
+                </div>
+                <div class="formula-explanation">
+                    Where N is the year number (1-5)
+                </div>
+            </div>
+        </section>
+    </div>
+    </main>
+</body>
+</html>
