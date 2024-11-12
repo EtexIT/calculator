@@ -425,8 +425,137 @@ function resetBusinessCase() {
 }
 
 function exportPDF() {
-    // Implementation will be added later
-    console.log('Export PDF clicked');
+    console.log('Starting PDF export with jsPDF...');
+    
+    // Get data
+    const data = {
+        projectName: document.getElementById('summaryProjectName').textContent,
+        projectOwner: document.getElementById('summaryProjectOwner').textContent,
+        department: document.getElementById('summaryDepartment').textContent,
+        estimatedBy: document.getElementById('summaryEstimatedBy').textContent,
+        roi: document.getElementById('roiValue').textContent,
+        paybackPeriod: document.getElementById('paybackPeriod').textContent,
+        netBenefit: document.getElementById('netBenefit').textContent
+    };
+
+    // Get financial overview data
+    const financialTable = document.getElementById('financialOverview');
+    const financialData = [];
+    financialTable.querySelectorAll('tbody tr').forEach(row => {
+        const rowData = Array.from(row.cells).map(cell => cell.textContent.trim());
+        financialData.push(rowData);
+    });
+
+    // Create new jsPDF instance
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    // Set font
+    doc.setFont("helvetica");
+    
+    // Add title
+    doc.setFontSize(20);
+    doc.setTextColor(240, 109, 13); // Etex Orange
+    doc.text('Project Business Case Summary', 20, 20);
+    
+    // Add generation date
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 30);
+    
+    // Add line
+    doc.setDrawColor(240, 109, 13);
+    doc.line(20, 35, 190, 35);
+    
+    // Project Information section
+    doc.setFontSize(16);
+    doc.setTextColor(240, 109, 13);
+    doc.text('Project Information', 20, 50);
+    
+    // Project details as table
+    doc.autoTable({
+        startY: 60,
+        head: [['Field', 'Value']],
+        body: [
+            ['Project Name', data.projectName],
+            ['Project Owner', data.projectOwner],
+            ['Department', data.department],
+            ['Estimated By', data.estimatedBy]
+        ],
+        theme: 'grid',
+        headStyles: { 
+            fillColor: [240, 109, 13],
+            textColor: [255, 255, 255]
+        },
+        margin: { left: 30 },
+        columnStyles: {
+            0: { cellWidth: 50 }
+        }
+    });
+    
+    // Key Metrics section
+    doc.setFontSize(16);
+    doc.setTextColor(240, 109, 13);
+    doc.text('Key Metrics', 20, doc.lastAutoTable.finalY + 20);
+    
+    // Metrics as table
+    doc.autoTable({
+        startY: doc.lastAutoTable.finalY + 30,
+        head: [['Metric', 'Value']],
+        body: [
+            ['Return on Investment', data.roi],
+            ['Payback Period', data.paybackPeriod],
+            ['Net Benefit', data.netBenefit]
+        ],
+        theme: 'grid',
+        headStyles: { 
+            fillColor: [240, 109, 13],
+            textColor: [255, 255, 255]
+        },
+        margin: { left: 30 },
+        columnStyles: {
+            0: { cellWidth: 50 }
+        }
+    });
+
+    // Financial Overview section
+    doc.setFontSize(16);
+    doc.setTextColor(240, 109, 13);
+    doc.text('5 Year Financial Overview', 20, doc.lastAutoTable.finalY + 20);
+
+    // Financial overview table
+    doc.autoTable({
+        startY: doc.lastAutoTable.finalY + 30,
+        head: [[
+            'Year',
+            'Costs',
+            'One-off Value',
+            'Recurring Value',
+            'Net Cash Flow',
+            'Accumulated Benefit'
+        ]],
+        body: financialData,
+        theme: 'grid',
+        headStyles: { 
+            fillColor: [240, 109, 13],
+            textColor: [255, 255, 255]
+        },
+        margin: { left: 20, right: 20 },
+        styles: {
+            fontSize: 8,
+            cellPadding: 2
+        }
+    });
+
+    // Save the PDF with project name in filename
+    try {
+        const filename = `${data.projectName.toLowerCase().replace(/[^a-z0-9]/g, '_')}_business_case.pdf`;
+        doc.save(filename);
+        console.log('PDF generated successfully');
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        alert('Error generating PDF. Please try again.');
+    }
 }
 
 function showIncompleteDataMessage() {
