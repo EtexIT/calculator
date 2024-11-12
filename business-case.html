@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -9,6 +9,11 @@
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+
     
 </head>
 <body>
@@ -118,7 +123,7 @@
             <div class="action-buttons">
                 <button id="saveBusinessCase" class="btn-primary">Save Business Case</button>
                 <button id="resetBusinessCase" class="btn-secondary">Reset</button>
-                <button id="exportPDF" class="btn-secondary">Export PDF</button>
+                <button id="exportPDF" class="btn-secondary"><i class="fas fa-file-pdf"></i> Export PDF </button>
             </div>
         </div>
     </main>
