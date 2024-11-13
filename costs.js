@@ -160,8 +160,7 @@ function calculateTeamCosts() {
         const validationDays = Number(row.querySelector('.days-validation').value) || 0;
         const scopingDays = Number(row.querySelector('.days-scoping').value) || 0;
         const executionDays = Number(row.querySelector('.days-execution').value) || 0;
-        // Changed this line to handle 0 properly
-        const contingency = row.querySelector('.contingency').value === '' ? 10 : Number(row.querySelector('.contingency').value);
+        const contingency = Number(row.querySelector('.contingency').value) || 10;
 
         const contingencyMultiplier = 1 + (contingency / 100);
 
@@ -610,7 +609,7 @@ function calculateCapexOpexSplit(teamCosts, techCosts, externalCosts, riskAmount
     // Get validation phase cost (OPEX)
     const validationCost = parseCurrency(document.getElementById('validationPhaseCost').textContent);
 
-    // Get scoping and execution costs (CAPEX)
+    // Get scoping and execution costs (CAPEX) - Updated to use scopingPhaseCost
     const scopingCost = parseCurrency(document.getElementById('scopingPhaseCost').textContent);
     const executionCost = parseCurrency(document.getElementById('executionPhaseCost').textContent);
 
@@ -637,8 +636,8 @@ function calculateCapexOpexSplit(teamCosts, techCosts, externalCosts, riskAmount
     const totalOpex = baseOpex + opexRisk;
 
     // Update display
-    document.getElementById('capexTotal').textContent = formatCurrency(totalCapex || 0);
-    document.getElementById('opexTotal').textContent = formatCurrency(totalOpex || 0);
+    document.getElementById('capexTotal').textContent = formatCurrency(capexTotal);
+    document.getElementById('opexTotal').textContent = formatCurrency(opexTotal);
 
     // Log calculations for debugging
     console.log('CAPEX/OPEX Split:', {
