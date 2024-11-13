@@ -610,7 +610,7 @@ function calculateCapexOpexSplit(teamCosts, techCosts, externalCosts, riskAmount
     // Get validation phase cost (OPEX)
     const validationCost = parseCurrency(document.getElementById('validationPhaseCost').textContent);
 
-    // Get scoping and execution costs (CAPEX) - Updated to use scopingPhaseCost
+    // Get scoping and execution costs (CAPEX)
     const scopingCost = parseCurrency(document.getElementById('scopingPhaseCost').textContent);
     const executionCost = parseCurrency(document.getElementById('executionPhaseCost').textContent);
 
@@ -637,8 +637,8 @@ function calculateCapexOpexSplit(teamCosts, techCosts, externalCosts, riskAmount
     const totalOpex = baseOpex + opexRisk;
 
     // Update display
-    document.getElementById('capexTotal').textContent = formatCurrency(capexTotal);
-    document.getElementById('opexTotal').textContent = formatCurrency(opexTotal);
+    document.getElementById('capexTotal').textContent = formatCurrency(totalCapex || 0);
+    document.getElementById('opexTotal').textContent = formatCurrency(totalOpex || 0);
 
     // Log calculations for debugging
     console.log('CAPEX/OPEX Split:', {
