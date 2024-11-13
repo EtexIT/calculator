@@ -160,7 +160,8 @@ function calculateTeamCosts() {
         const validationDays = Number(row.querySelector('.days-validation').value) || 0;
         const scopingDays = Number(row.querySelector('.days-scoping').value) || 0;
         const executionDays = Number(row.querySelector('.days-execution').value) || 0;
-        const contingency = Number(row.querySelector('.contingency').value) || 10;
+        // Changed this line to handle 0 properly
+        const contingency = row.querySelector('.contingency').value === '' ? 10 : Number(row.querySelector('.contingency').value);
 
         const contingencyMultiplier = 1 + (contingency / 100);
 
