@@ -153,22 +153,44 @@ function calculateTeamCosts() {
     let executionTotal = 0;
     let totalTeamCosts = 0;
 
-    document.querySelectorAll('#teamCostsTable tbody tr').forEach(row => {
+    // Log how many rows we're finding
+    const rows = document.querySelectorAll('#teamCostsTable tbody tr');
+    console.log('Number of rows found:', rows.length);
+
+    rows.forEach((row, index) => {
+        // Log which row we're processing
+        console.log(`Processing row ${index + 1}`);
+
         // Get values and ensure they're numbers
         const persons = Number(row.querySelector('.persons').value) || 0;
         const rate = Number(row.querySelector('.rate').value) || 800;
         const validationDays = Number(row.querySelector('.days-validation').value) || 0;
         const scopingDays = Number(row.querySelector('.days-scoping').value) || 0;
         const executionDays = Number(row.querySelector('.days-execution').value) || 0;
-        const contingency = Number(row.querySelector('.contingency').value) || 10;
+        const contingency = row.querySelector('.contingency').value === '' ? 10 : Number(row.querySelector('.contingency').value);
+
+        console.log('Row values:', {
+            persons,
+            rate,
+            validationDays,
+            scopingDays,
+            executionDays,
+            contingency
+        });
 
         const contingencyMultiplier = 1 + (contingency / 100);
-
         const validationCost = rate * validationDays * persons * contingencyMultiplier;
         const scopingCost = rate * scopingDays * persons * contingencyMultiplier;
         const executionCost = rate * executionDays * persons * contingencyMultiplier;
-
         const rowTotal = validationCost + scopingCost + executionCost;
+
+        console.log('Row calculations:', {
+            contingencyMultiplier,
+            validationCost,
+            scopingCost,
+            executionCost,
+            rowTotal
+        });
 
         validationTotal += validationCost;
         scopingTotal += scopingCost;
@@ -179,31 +201,34 @@ function calculateTeamCosts() {
         row.querySelector('.total').textContent = formatCurrency(rowTotal);
     });
 
-    // Update phase totals
-    document.getElementById('validationPhaseCost').textContent = formatCurrency(validationTotal);
-    document.getElementById('scopingPhaseCost').textContent = formatCurrency(scopingTotal);
-    document.getElementById('executionPhaseCost').textContent = formatCurrency(executionTotal);
-
-    // Update total team costs - ensure this updates both places
-    const totalTeamCostsElement = document.getElementById('totalTeamCosts');
-    if (totalTeamCostsElement) {
-        totalTeamCostsElement.textContent = formatCurrency(totalTeamCosts);
-    }
-
-    // Also update in the summary section
-    const summaryTeamCostsElement = document.getElementById('summaryTeamCosts');
-    if (summaryTeamCostsElement) {
-        summaryTeamCostsElement.textContent = formatCurrency(totalTeamCosts);
-    }
-
-    console.log('Total calculations:', {
+    console.log('Final totals before updates:', {
         validationTotal,
         scopingTotal,
         executionTotal,
         totalTeamCosts
     });
 
-    // Ensure we call updateTotalCosts to update the grand total
+    // Update phase totals
+    document.getElementById('validationPhaseCost').textContent = formatCurrency(validationTotal);
+    document.getElementById('scopingPhaseCost').textContent = formatCurrency(scopingTotal);
+    document.getElementById('executionPhaseCost').textContent = formatCurrency(executionTotal);
+
+    // Update total team costs
+    const totalTeamCostsElement = document.getElementById('totalTeamCosts');
+    console.log('Total team costs element found:', !!totalTeamCostsElement);
+    if (totalTeamCostsElement) {
+        totalTeamCostsElement.textContent = formatCurrency(totalTeamCosts);
+        console.log('Updated total team costs to:', formatCurrency(totalTeamCosts));
+    }
+
+    // Update summary
+    const summaryTeamCostsElement = document.getElementById('summaryTeamCosts');
+    console.log('Summary team costs element found:', !!summaryTeamCostsElement);
+    if (summaryTeamCostsElement) {
+        summaryTeamCostsElement.textContent = formatCurrency(totalTeamCosts);
+        console.log('Updated summary team costs to:', formatCurrency(totalTeamCosts));
+    }
+
     updateTotalCosts();
     updateCharts();
 }
@@ -231,10 +256,15 @@ function calculateExternalCosts() {
     let total = 0;
 
     document.querySelectorAll('#externalCostsTable tbody tr').forEach(row => {
-        const cost = parseFloat(row.querySelector('.external-cost').value) || 0;
+        const oneTime = parseFloat(row.querySelector('.external-cost').value) || 0;
+        const monthly = parseFloat(row.querySelector('.external-monthly').value) || 0;
+        const duration = parseFloat(row.querySelector('.external-duration').value) || 0;
         const contingency = parseFloat(row.querySelector('.external-contingency').value) || 0;
 
-        const rowTotal = cost * (1 + contingency / 100);
+        const monthlyTotal = monthly * duration;
+        const subtotal = oneTime + monthlyTotal;
+        const rowTotal = subtotal * (1 + contingency / 100);
+        
         total += rowTotal;
 
         row.querySelector('.total').textContent = formatCurrency(rowTotal);
@@ -606,10 +636,14 @@ function calculateCapexSplit() {
     }
 }
 function calculateCapexOpexSplit(teamCosts, techCosts, externalCosts, riskAmount) {
+    console.log('Starting CAPEX/OPEX calculation with:', {
+        teamCosts, techCosts, externalCosts, riskAmount
+    });
+
     // Get validation phase cost (OPEX)
     const validationCost = parseCurrency(document.getElementById('validationPhaseCost').textContent);
 
-    // Get scoping and execution costs (CAPEX) - Updated to use scopingPhaseCost
+    // Get scoping and execution costs (CAPEX)
     const scopingCost = parseCurrency(document.getElementById('scopingPhaseCost').textContent);
     const executionCost = parseCurrency(document.getElementById('executionPhaseCost').textContent);
 
@@ -635,12 +669,7 @@ function calculateCapexOpexSplit(teamCosts, techCosts, externalCosts, riskAmount
     const totalCapex = baseCapex + capexRisk;
     const totalOpex = baseOpex + opexRisk;
 
-    // Update display
-    document.getElementById('capexTotal').textContent = formatCurrency(capexTotal);
-    document.getElementById('opexTotal').textContent = formatCurrency(opexTotal);
-
-    // Log calculations for debugging
-    console.log('CAPEX/OPEX Split:', {
+    console.log('CAPEX/OPEX calculations:', {
         validationCost,
         scopingCost,
         executionCost,
@@ -653,6 +682,10 @@ function calculateCapexOpexSplit(teamCosts, techCosts, externalCosts, riskAmount
         totalCapex,
         totalOpex
     });
+
+    // Update display with explicit number conversion and fallback to 0
+    document.getElementById('capexTotal').textContent = formatCurrency(Number(totalCapex) || 0);
+    document.getElementById('opexTotal').textContent = formatCurrency(Number(totalOpex) || 0);
 }
 
 function calculateOneTimeTechCosts() {
@@ -778,9 +811,200 @@ function initializeCharts() {
 }
 
 function updateCharts() {
-    // Add this console.log to debug updates
-    console.log('Updating charts...');
-    
+    if (!costDistributionChart || !phaseDistributionChart) {
+        console.warn('Charts not initialized yet');
+        return;
+    }
+
+    try {
+        // Update Cost Distribution Chart (pie chart)
+        const teamCosts = parseCurrency(document.getElementById('summaryTeamCosts').textContent);
+        const techCosts = parseCurrency(document.getElementById('totalTechCosts').textContent);
+        const externalCosts = parseCurrency(document.getElementById('totalExternalCosts').textContent);
+        const riskAmount = parseCurrency(document.getElementById('summaryRiskAmount').textContent);
+
+        costDistributionChart.data.datasets[0].data = [
+            teamCosts,
+            techCosts,
+            externalCosts,
+            riskAmount
+        ];
+        costDistributionChart.update();
+
+        // Update Phase Distribution Chart to show cost over time
+        const validationCost = parseCurrency(document.getElementById('validationPhaseCost').textContent);
+        const scopingCost = parseCurrency(document.getElementById('scopingPhaseCost').textContent);
+        const executionCost = parseCurrency(document.getElementById('executionPhaseCost').textContent);
+
+        // Get tech and external costs
+        const techRecurringCosts = calculateRecurringTechCosts();
+        const techOnetimeCosts = calculateOneTimeTechCosts();
+        const totalExternalCosts = parseCurrency(document.getElementById('totalExternalCosts').textContent);
+
+        // Prepare data for phases
+        const capexData = [
+            0, // Validation - no CAPEX
+            scopingCost, // Scoping - team costs only
+            executionCost + techOnetimeCosts + totalExternalCosts // Execution - all costs
+        ];
+
+        const opexData = [
+            validationCost, // Validation - all validation is OPEX
+            0, // Scoping - no OPEX
+            techRecurringCosts // Execution - recurring tech costs
+        ];
+
+        phaseDistributionChart.data.datasets = [
+            {
+                label: 'CAPEX',
+                data: capexData,
+                backgroundColor: '#F06D0D', // Etex Orange
+                borderColor: '#F06D0D',
+                borderWidth: 1,
+                stack: 'stack0'
+            },
+            {
+                label: 'OPEX',
+                data: opexData,
+                backgroundColor: '#4A90E2', // Blue
+                borderColor: '#4A90E2',
+                borderWidth: 1,
+                stack: 'stack0'
+            }
+        ];
+
+        phaseDistributionChart.update();
+
+        console.log('Charts updated successfully');
+    } catch (error) {
+        console.error('Error updating charts:', error);
+    }
+}
+
+// Helper function to calculate recurring tech costs
+function calculateRecurringTechCosts() {
+    let total = 0;
+    document.querySelectorAll('#techCostsTable tbody tr').forEach(row => {
+        const monthly = parseFloat(row.querySelector('.tech-monthly').value) || 0;
+        const duration = parseFloat(row.querySelector('.tech-duration').value) || 0;
+        total += monthly * duration;
+    });
+    return total;
+}
+
+// Update the initializeCharts function for the phase distribution chart
+function initializeCharts() {
+    console.log('Initializing charts...');
+    const costDistCanvas = document.getElementById('costDistributionChart');
+    const costTimeCanvas = document.getElementById('costOverTimeChart');
+
+    if (!costDistCanvas || !costTimeCanvas) {
+        console.error('Chart canvases not found', {
+            costDist: costDistCanvas,
+            costTime: costTimeCanvas
+        });
+        return;
+    }
+
+    // Initialize Cost Distribution Chart
+    costDistributionChart = new Chart(costDistCanvas, {
+        type: 'pie',
+        data: {
+            labels: ['Team Costs', 'Technology Costs', 'External Costs', 'Risk Adjustment'],
+            datasets: [{
+                data: [0, 0, 0, 0],
+                backgroundColor: [
+                    '#F06D0D',  // Original orange
+                    '#4A90E2',  // Blue
+                    '#50C878',  // Green
+                    '#FFB563'   // Light orange
+                ],
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 1.5,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: {
+                            size: 14
+                        },
+                        padding: 20,
+                        color: '#333333'
+                    }
+                }
+            }
+        }
+    });
+
+    // Initialize Cost Over Time Chart
+    phaseDistributionChart = new Chart(costTimeCanvas, {
+        type: 'bar',
+        data: {
+            labels: ['Project Phases', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'],
+            datasets: [
+                {
+                    label: 'CAPEX',
+                    data: [0, 0, 0, 0, 0, 0],
+                    backgroundColor: '#F06D0D',
+                    stack: 'stack0'
+                },
+                {
+                    label: 'OPEX',
+                    data: [0, 0, 0, 0, 0, 0],
+                    backgroundColor: '#4A90E2',
+                    stack: 'stack0'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 1.5,
+            scales: {
+                x: {
+                    stacked: true,
+                    grid: {
+                        display: false
+                    }
+                },
+                y: {
+                    stacked: true,
+                    beginAtZero: true,
+                    ticks: {
+                        callback: value => formatCurrency(value)
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: { size: 12 },
+                        padding: 20
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.dataset.label}: ${formatCurrency(context.raw)}`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    console.log('Charts initialized successfully');
+    updateCharts();
+}
+
+function updateCharts() {
     if (!costDistributionChart || !phaseDistributionChart) {
         console.warn('Charts not initialized yet');
         return;
@@ -801,41 +1025,65 @@ function updateCharts() {
         ];
         costDistributionChart.update();
 
-        // Update Phase Distribution Chart
+        // Update Cost Over Time Chart with new timeline data
         const validationCost = parseCurrency(document.getElementById('validationPhaseCost').textContent);
         const scopingCost = parseCurrency(document.getElementById('scopingPhaseCost').textContent);
         const executionCost = parseCurrency(document.getElementById('executionPhaseCost').textContent);
 
-        phaseDistributionChart.data.datasets[0].data = [
-            validationCost,
-            scopingCost,
-            executionCost
+        // Calculate monthly tech costs for recurring years
+        let monthlyTechCosts = 0;
+        document.querySelectorAll('#techCostsTable tbody tr').forEach(row => {
+            const monthly = parseFloat(row.querySelector('.tech-monthly').value) || 0;
+            monthlyTechCosts += monthly;
+        });
+        const yearlyTechCosts = monthlyTechCosts * 12;
+
+        // One-time tech costs
+        const techOnetimeCosts = calculateOneTimeTechCosts();
+
+        // CAPEX data - all one-time costs in project phases
+        const capexData = [
+            scopingCost + executionCost + techOnetimeCosts + externalCosts, // Project Phases
+            0, // Year 1
+            0, // Year 2
+            0, // Year 3
+            0, // Year 4
+            0  // Year 5
         ];
+
+        // OPEX data - validation costs in project phases + recurring costs in following years
+        const opexData = [
+            validationCost, // Project Phases
+            yearlyTechCosts, // Year 1
+            yearlyTechCosts, // Year 2
+            yearlyTechCosts, // Year 3
+            yearlyTechCosts, // Year 4
+            yearlyTechCosts  // Year 5
+        ];
+
+        phaseDistributionChart.data.datasets = [
+            {
+                label: 'CAPEX',
+                data: capexData,
+                backgroundColor: '#F06D0D',
+                stack: 'stack0'
+            },
+            {
+                label: 'OPEX',
+                data: opexData,
+                backgroundColor: '#4A90E2',
+                stack: 'stack0'
+            }
+        ];
+
         phaseDistributionChart.update();
 
-        console.log('Charts updated successfully');
+        console.log('Charts updated successfully', {
+            capexData,
+            opexData,
+            yearlyTechCosts
+        });
     } catch (error) {
         console.error('Error updating charts:', error);
     }
-}
-
-function saveBusinessCase() {
-    const costs = {
-        isCapex: document.getElementById('isCapexProject')?.checked || false,
-        teamCosts: collectTeamCosts(),
-        techCosts: collectTechCosts(),
-        externalCosts: collectExternalCosts(),
-        summary: collectSummary()
-    };
-
-    localStorage.setItem('projectCosts', JSON.stringify(costs));
-
-    // Show save confirmation
-    const saveButton = document.getElementById('saveCosts');
-    saveButton.textContent = 'Saved!';
-    saveButton.disabled = true;
-    setTimeout(() => {
-        saveButton.textContent = 'Save';
-        saveButton.disabled = false;
-    }, 2000);
 }
