@@ -427,7 +427,7 @@ function resetBusinessCase() {
 function exportPDF() {
     console.log('Starting PDF export with jsPDF...');
     
-    // Get data
+    // Get all data
     const data = {
         projectName: document.getElementById('summaryProjectName').textContent,
         projectOwner: document.getElementById('summaryProjectOwner').textContent,
@@ -437,6 +437,9 @@ function exportPDF() {
         paybackPeriod: document.getElementById('paybackPeriod').textContent,
         netBenefit: document.getElementById('netBenefit').textContent
     };
+
+    // Get assessment data
+    const assessment = JSON.parse(localStorage.getItem('projectAssessment') || '{}');
 
     // Get financial overview data
     const financialTable = document.getElementById('financialOverview');
@@ -481,6 +484,30 @@ function exportPDF() {
             ['Project Owner', data.projectOwner],
             ['Department', data.department],
             ['Estimated By', data.estimatedBy]
+        ],
+        theme: 'grid',
+        headStyles: { 
+            fillColor: [240, 109, 13],
+            textColor: [255, 255, 255]
+        },
+        margin: { left: 30 },
+        columnStyles: {
+            0: { cellWidth: 50 }
+        }
+    });
+
+    // Assessment Outcome section
+    doc.setFontSize(16);
+    doc.setTextColor(240, 109, 13);
+    doc.text('Assessment Outcome', 20, doc.lastAutoTable.finalY + 20);
+
+    doc.autoTable({
+        startY: doc.lastAutoTable.finalY + 30,
+        head: [['Assessment', 'Result']],
+        body: [
+            ['Total Score', assessment.totalScore],
+            ['Risk Adjustment', assessment.riskAdjustment],
+            ['PMO Approach', assessment.recommendedApproach]
         ],
         theme: 'grid',
         headStyles: { 
@@ -547,6 +574,28 @@ function exportPDF() {
         }
     });
 
+    // Add new page for charts
+    doc.addPage();
+
+    // Add charts
+    doc.setFontSize(16);
+    doc.setTextColor(240, 109, 13);
+    doc.text('Financial Analysis Charts', 20, 20);
+
+    // Convert charts to images
+    const cashFlowCanvas = document.getElementById('cashFlowChart');
+    const accumulatedCanvas = document.getElementById('accumulatedBenefitChart');
+
+    if (cashFlowCanvas && accumulatedCanvas) {
+        // Add Cash Flow Chart
+        const cashFlowImage = cashFlowCanvas.toDataURL('image/png');
+        doc.addImage(cashFlowImage, 'PNG', 20, 40, 170, 100);
+
+        // Add Accumulated Benefit Chart
+        const accumulatedImage = accumulatedCanvas.toDataURL('image/png');
+        doc.addImage(accumulatedImage, 'PNG', 20, 160, 170, 100);
+    }
+
     // Save the PDF with project name in filename
     try {
         const filename = `${data.projectName.toLowerCase().replace(/[^a-z0-9]/g, '_')}_business_case.pdf`;
@@ -556,20 +605,6 @@ function exportPDF() {
         console.error('Error generating PDF:', error);
         alert('Error generating PDF. Please try again.');
     }
-}
-
-function showIncompleteDataMessage() {
-    const container = document.querySelector('.business-case-container');
-    container.innerHTML = `
-        <div class="alert alert-warning">
-            <h2>Incomplete Data</h2>
-            <p>Please complete both cost estimation and value analysis first.</p>
-            <div class="btn-group">
-                <a href="costs.html" class="btn-primary">Go to Costs</a>
-                <a href="value.html" class="btn-primary">Go to Value</a>
-            </div>
-        </div>
-    `;
 }
 
 function loadProjectInfo() {
