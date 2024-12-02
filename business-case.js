@@ -427,7 +427,7 @@ function resetBusinessCase() {
 function exportPDF() {
     console.log('Starting PDF export with jsPDF...');
     
-    // Get all data
+    // Get data
     const data = {
         projectName: document.getElementById('summaryProjectName').textContent,
         projectOwner: document.getElementById('summaryProjectOwner').textContent,
@@ -438,8 +438,10 @@ function exportPDF() {
         netBenefit: document.getElementById('netBenefit').textContent
     };
 
-    // Get assessment data
+    // Get the assessment, cost and value data
     const assessment = JSON.parse(localStorage.getItem('projectAssessment') || '{}');
+    const costs = JSON.parse(localStorage.getItem('projectCosts') || '{}');
+    const values = JSON.parse(localStorage.getItem('projectValue') || '{}');
 
     // Get financial overview data
     const financialTable = document.getElementById('financialOverview');
@@ -495,7 +497,7 @@ function exportPDF() {
             0: { cellWidth: 50 }
         }
     });
-
+    
     // Assessment Outcome section
     doc.setFontSize(16);
     doc.setTextColor(240, 109, 13);
@@ -519,15 +521,146 @@ function exportPDF() {
             0: { cellWidth: 50 }
         }
     });
-    
-    // Key Metrics section
+
+    // Cost Breakdown section - New page
+    doc.addPage();
     doc.setFontSize(16);
     doc.setTextColor(240, 109, 13);
-    doc.text('Key Metrics', 20, doc.lastAutoTable.finalY + 20);
+    doc.text('Cost Breakdown', 20, 20);
+
+    // Team Costs
+if (costs.teamCosts) {
+    doc.autoTable({
+        startY: 30,
+        head: [['Role', 'Persons', 'Validation Days', 'Scoping Days', 'Execution Days', 'Rate', 'Contingency', 'Total']],
+        body: costs.teamCosts.map((member, index) => [
+            index === 0 ? 'Project Manager' :
+            index === 1 ? 'Solution Architecture' :
+            index === 2 ? 'Business Analyst' :
+            index === 3 ? 'Developer' :
+            index === 4 ? 'Tester' :
+            index === 5 ? 'Local IT' : 'Unknown',
+            member.persons || '0',
+            member.validationDays || '0',
+            member.scopingDays || '0',
+            member.executionDays || '0',
+            formatCurrency(member.rate || 0),
+            `${member.contingency}%` || '0%',
+            formatCurrency(member.total || 0)
+        ]),
+        theme: 'grid',
+        headStyles: { fillColor: [240, 109, 13], textColor: [255, 255, 255] },
+        margin: { left: 20, right: 20 },
+        styles: { fontSize: 8 }
+    });
+}
+
+// Technology Costs
+if (costs.techCosts) {
+    doc.text('Technology Costs', 20, doc.lastAutoTable.finalY + 20);
+    doc.autoTable({
+        startY: doc.lastAutoTable.finalY + 30,
+        head: [['Item', 'One-time Cost', 'Monthly Cost', 'Duration', 'Description', 'Total']],
+        body: costs.techCosts.map((tech, index) => [
+            index === 0 ? 'Licenses' :
+            index === 1 ? 'Infrastructure' :
+            index === 2 ? 'Cloud Services' :
+            index === 3 ? 'Tools' :
+            index === 4 ? 'Data Migration' :
+            index === 5 ? 'Application Maintenance' : 'Other',
+            formatCurrency(tech['tech-onetime'] || 0),
+            formatCurrency(tech['tech-monthly'] || 0),
+            `${tech['tech-duration'] || 0} months`,
+            tech.description || '',
+            formatCurrency((parseFloat(tech['tech-onetime'] || 0) + 
+                         (parseFloat(tech['tech-monthly'] || 0) * parseFloat(tech['tech-duration'] || 0))))
+        ]),
+        theme: 'grid',
+        headStyles: { fillColor: [240, 109, 13], textColor: [255, 255, 255] },
+        margin: { left: 20, right: 20 },
+        styles: { fontSize: 8 }
+    });
+}
+
+// External Costs
+if (costs.externalCosts) {
+    doc.text('External Costs', 20, doc.lastAutoTable.finalY + 20);
+    doc.autoTable({
+        startY: doc.lastAutoTable.finalY + 30,
+        head: [['Item', 'One-time Cost', 'Monthly Cost', 'Duration', 'Contingency', 'Description', 'Total']],
+        body: costs.externalCosts.map((ext, index) => [
+            index === 0 ? 'Vendors' :
+            index === 1 ? 'Consultants' :
+            index === 2 ? 'Training & expenses' : 'Other',
+            formatCurrency(ext['external-cost'] || 0),
+            formatCurrency(ext['external-monthly'] || 0),
+            `${ext['external-duration'] || 0} months`,
+            `${ext['external-contingency']}%` || '0%',
+            ext.description || '',
+            formatCurrency(ext.total || 0)
+        ]),
+        theme: 'grid',
+        headStyles: { fillColor: [240, 109, 13], textColor: [255, 255, 255] },
+        margin: { left: 20, right: 20 },
+        styles: { fontSize: 8 }
+    });
+}
+
+    // Value Breakdown section - New page
+    doc.addPage();
+    doc.setFontSize(16);
+    doc.setTextColor(240, 109, 13);
+    doc.text('Value Breakdown', 20, 20);
+
+    // One-off Values
+if (values.oneOff) {
+    doc.autoTable({
+        startY: 30,
+        head: [['Category', 'Amount', 'Description']],
+        body: values.oneOff.map((item, index) => [
+            index === 0 ? 'Hardware savings' :
+            index === 1 ? 'Inventory reduction' :
+            index === 2 ? 'Asset sale' : 'Other one-off value',
+            formatCurrency(item.amount || 0),
+            item.description || ''
+        ]),
+        theme: 'grid',
+        headStyles: { fillColor: [240, 109, 13], textColor: [255, 255, 255] },
+        margin: { left: 20, right: 20 }
+    });
+}
+
+    // Recurring Values
+    if (values.recurring) {
+        doc.text('Recurring Values', 20, doc.lastAutoTable.finalY + 20);
+        doc.autoTable({
+            startY: doc.lastAutoTable.finalY + 30,
+            head: [['Category', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Description']],
+            body: values.recurring.map(item => [
+                'Recurring Value',
+                formatCurrency(item.year1 || 0),
+                formatCurrency(item.year2 || 0),
+                formatCurrency(item.year3 || 0),
+                formatCurrency(item.year4 || 0),
+                formatCurrency(item.year5 || 0),
+                item.description || ''
+            ]),
+            theme: 'grid',
+            headStyles: { fillColor: [240, 109, 13], textColor: [255, 255, 255] },
+            margin: { left: 20, right: 20 },
+            styles: { fontSize: 8 }
+        });
+    }
+    
+    // Key Metrics section - New page
+    doc.addPage();
+    doc.setFontSize(16);
+    doc.setTextColor(240, 109, 13);
+    doc.text('Key Metrics', 20, 20);
     
     // Metrics as table
     doc.autoTable({
-        startY: doc.lastAutoTable.finalY + 30,
+        startY: 30,
         head: [['Metric', 'Value']],
         body: [
             ['Return on Investment', data.roi],
@@ -546,8 +679,6 @@ function exportPDF() {
     });
 
     // Financial Overview section
-    doc.setFontSize(16);
-    doc.setTextColor(240, 109, 13);
     doc.text('5 Year Financial Overview', 20, doc.lastAutoTable.finalY + 20);
 
     // Financial overview table
@@ -574,24 +705,20 @@ function exportPDF() {
         }
     });
 
-    // Add new page for charts
+    // Charts section - New page
     doc.addPage();
-
-    // Add charts
     doc.setFontSize(16);
     doc.setTextColor(240, 109, 13);
     doc.text('Financial Analysis Charts', 20, 20);
 
-    // Convert charts to images
+    // Add charts
     const cashFlowCanvas = document.getElementById('cashFlowChart');
     const accumulatedCanvas = document.getElementById('accumulatedBenefitChart');
 
     if (cashFlowCanvas && accumulatedCanvas) {
-        // Add Cash Flow Chart
         const cashFlowImage = cashFlowCanvas.toDataURL('image/png');
         doc.addImage(cashFlowImage, 'PNG', 20, 40, 170, 100);
 
-        // Add Accumulated Benefit Chart
         const accumulatedImage = accumulatedCanvas.toDataURL('image/png');
         doc.addImage(accumulatedImage, 'PNG', 20, 160, 170, 100);
     }
