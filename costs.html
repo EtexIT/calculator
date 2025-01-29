@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -51,6 +51,10 @@
                         <span id="summaryDepartment">-</span>
                     </div>
                     <div class="summary-item">
+                        <label>Platforms:</label>
+                        <span id="summaryPlatforms">-</span>
+                    </div>
+                    <div class="summary-item">
                         <label>Estimated By:</label>
                         <span id="summaryEstimatedBy">-</span>
                     </div>
@@ -66,6 +70,7 @@
                     </label>
                     <span class="capex-tooltip" title="CAPEX includes team costs during scoping & execution, one-time technology costs, and external costs">ⓘ</span>
                 </div>
+                
             </section>
 
             <!-- Team Costs Section -->
@@ -322,6 +327,19 @@
                     </div>
                 </div>
 
+                <div class="total-costs-grid">
+                    <div class="total-cost-card">
+                        <div class="total-cost-label">Total Project Cost</div>
+                        <div id="totalProjectCost" class="total-cost-value">€0.00</div>
+                        <div class="cost-explanation">Includes scoping & execution phase costs, one-time tech costs, and external costs</div>
+                    </div>
+                    <div class="total-cost-card">
+                        <div class="total-cost-label">Total Maintenance cost</div>
+                        <div id="totalTCO" class="total-cost-value">€0.00</div>
+                        <div class="cost-explanation">Includes validation phase costs and recurring technology costs</div>
+                    </div>
+                </div>
+
                 <div class="cost-classification">
                     <h3>Cost Classification</h3>
                     <div class="classification-grid">
@@ -337,7 +355,7 @@
                 </div>
 
                 <div class="total-cost">
-                    <div class="total-label">Total Estimated Cost</div>
+                    <div class="total-label">Total Cost of Ownership (TCO)</div>
                     <div id="totalCost" class="total-value">€0.00</div>
                 </div>
             </section>

@@ -18,6 +18,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // Add score range info
     addScoreRangeInfo();
 
+        // Add event listeners
+        addInputListeners();
+
     // Calculate initial score
     calculateScore();
     const nextButton = document.getElementById('nextButton');
@@ -125,7 +128,9 @@ function saveAssessment() {
         projectName: document.getElementById('projectName').value,
         projectOwner: document.getElementById('projectOwner').value,
         department: document.getElementById('department').value,
+        platforms: Array.from(document.getElementById('platforms').selectedOptions).map(option => option.text),
         date: document.getElementById('date').value,
+        displayDate: formatDate(document.getElementById('date').value),
         estimatedBy: document.getElementById('estimatedBy').value,
         scores: {},
         totalScore: document.getElementById('totalScore').textContent,
@@ -165,6 +170,14 @@ function loadSavedAssessment() {
         document.getElementById('projectName').value = assessment.projectName ?? '';
         document.getElementById('projectOwner').value = assessment.projectOwner ?? '';
         document.getElementById('department').value = assessment.department ?? '';
+        if (assessment.platforms) {
+            const platformSelect = document.getElementById('platforms');
+            Array.from(platformSelect.options).forEach(option => {
+                option.selected = assessment.platforms.includes(option.text);
+            });
+        }
+        document.getElementById('date').value = assessment.date ?? '';
+        document.getElementById('estimatedBy').value = assessment.estimatedBy ?? '';
         document.getElementById('date').value = assessment.date ?? '';
         document.getElementById('estimatedBy').value = assessment.estimatedBy ?? '';
 
@@ -223,4 +236,29 @@ function addScoreRangeInfo() {
     // Add this after the results section
     const resultsContainer = document.querySelector('.results-container');
     resultsContainer.insertAdjacentHTML('afterend', infoText);
+}
+
+function addInputListeners() {
+    // Add listener to all score selects (existing code)
+    document.querySelectorAll('.score-select').forEach(select => {
+        select.addEventListener('change', calculateScore);
+    });
+
+    // Add listener to platforms select
+    document.getElementById('platforms').addEventListener('change', function() {
+        // If save is automatic, save the assessment
+        if (document.querySelector('#platforms').value) {
+            saveAssessment();
+        }
+    });
+
+    // Add event listeners to buttons (existing code)
+    document.getElementById('saveAssessment').addEventListener('click', saveAssessment);
+    document.getElementById('resetAssessment').addEventListener('click', resetAssessment);
+}
+
+function formatDate(dateString) {
+    // Convert date to DD/MM/YYYY format
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB');
 }

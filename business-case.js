@@ -20,13 +20,107 @@ function loadFinancialData() {
     // Load values from localStorage
     const values = JSON.parse(localStorage.getItem('projectValue') || '{}');
     
+    console.log('Loaded costs:', costs);
+    console.log('Loaded values:', values);
+    
     if (Object.keys(costs).length === 0 || Object.keys(values).length === 0) {
         showIncompleteDataMessage();
         return;
     }
 
+    // Calculate metrics
+    const projectCost = calculateProjectCost(costs);
+    const tco = calculateTCO(costs);
+
+    console.log('Project Cost:', projectCost);
+    console.log('TCO:', tco);
+
+    // Update display with new metrics
+    document.getElementById('projectCostValue').textContent = formatCurrency(projectCost);
+    document.getElementById('tcoValue').textContent = formatCurrency(tco);
+
     calculateFinancialMetrics(costs, values);
 }
+
+function calculateProjectCost(costs) {
+    let projectCost = 0;
+    
+    // Calculate team costs for scoping and execution phases
+    if (costs.teamCosts) {
+        costs.teamCosts.forEach(member => {
+            const scopingCost = (parseFloat(member.scopingDays) || 0) * 
+                              (parseFloat(member.persons) || 0) * 
+                              (parseFloat(member.rate) || 0);
+            const executionCost = (parseFloat(member.executionDays) || 0) * 
+                                (parseFloat(member.persons) || 0) * 
+                                (parseFloat(member.rate) || 0);
+            const contingency = (parseFloat(member.contingency) || 0) / 100;
+            
+            projectCost += (scopingCost + executionCost) * (1 + contingency);
+        });
+    }
+
+    // Add one-time tech costs
+    if (costs.techCosts) {
+        costs.techCosts.forEach(tech => {
+            projectCost += parseFloat(tech['tech-onetime']) || 0;
+        });
+    }
+
+    // Add external costs
+    if (costs.externalCosts) {
+        costs.externalCosts.forEach(external => {
+            const cost = parseFloat(external['external-cost']) || 0;
+            const contingency = (parseFloat(external['external-contingency']) || 0) / 100;
+            projectCost += cost * (1 + contingency);
+        });
+    }
+
+    // Apply risk adjustment
+    const assessment = JSON.parse(localStorage.getItem('projectAssessment') || '{}');
+    if (assessment.riskAdjustment) {
+        const riskPercentage = parseFloat(assessment.riskAdjustment) / 100;
+        projectCost *= (1 + riskPercentage);
+    }
+
+    return projectCost;
+}
+
+function calculateTCO(costs) {
+    let tco = 0;
+    
+    // Calculate validation phase team costs
+    if (costs.teamCosts) {
+        costs.teamCosts.forEach(member => {
+            const validationCost = (parseFloat(member.validationDays) || 0) * 
+                                 (parseFloat(member.persons) || 0) * 
+                                 (parseFloat(member.rate) || 0);
+            const contingency = (parseFloat(member.contingency) || 0) / 100;
+            
+            tco += validationCost * (1 + contingency);
+        });
+    }
+
+    // Add recurring tech costs
+    if (costs.techCosts) {
+        costs.techCosts.forEach(tech => {
+            const monthly = parseFloat(tech['tech-monthly']) || 0;
+            const duration = parseFloat(tech['tech-duration']) || 0;
+            tco += monthly * duration;
+        });
+    }
+
+    // Apply risk adjustment
+    const assessment = JSON.parse(localStorage.getItem('projectAssessment') || '{}');
+    if (assessment.riskAdjustment) {
+        const riskPercentage = parseFloat(assessment.riskAdjustment) / 100;
+        tco *= (1 + riskPercentage);
+    }
+
+    return tco;
+}
+
+
 
 function processYearlyData(costs, values) {
     let yearlyData = Array(5).fill(null).map(() => ({
@@ -432,10 +526,13 @@ function exportPDF() {
         projectName: document.getElementById('summaryProjectName').textContent,
         projectOwner: document.getElementById('summaryProjectOwner').textContent,
         department: document.getElementById('summaryDepartment').textContent,
+        platforms: document.getElementById('summaryPlatforms').textContent,
         estimatedBy: document.getElementById('summaryEstimatedBy').textContent,
         roi: document.getElementById('roiValue').textContent,
         paybackPeriod: document.getElementById('paybackPeriod').textContent,
-        netBenefit: document.getElementById('netBenefit').textContent
+        netBenefit: document.getElementById('netBenefit').textContent,
+        projectCost: document.getElementById('projectCostValue').textContent,
+        tco: document.getElementById('tcoValue').textContent
     };
 
     // Get the assessment, cost and value data
@@ -485,6 +582,7 @@ function exportPDF() {
             ['Project Name', data.projectName],
             ['Project Owner', data.projectOwner],
             ['Department', data.department],
+            ['Platforms', data.platforms], 
             ['Estimated By', data.estimatedBy]
         ],
         theme: 'grid',
@@ -529,31 +627,43 @@ function exportPDF() {
     doc.text('Cost Breakdown', 20, 20);
 
     // Team Costs
-if (costs.teamCosts) {
-    doc.autoTable({
-        startY: 30,
-        head: [['Role', 'Persons', 'Validation Days', 'Scoping Days', 'Execution Days', 'Rate', 'Contingency', 'Total']],
-        body: costs.teamCosts.map((member, index) => [
-            index === 0 ? 'Project Manager' :
-            index === 1 ? 'Solution Architecture' :
-            index === 2 ? 'Business Analyst' :
-            index === 3 ? 'Developer' :
-            index === 4 ? 'Tester' :
-            index === 5 ? 'Local IT' : 'Unknown',
-            member.persons || '0',
-            member.validationDays || '0',
-            member.scopingDays || '0',
-            member.executionDays || '0',
-            formatCurrency(member.rate || 0),
-            `${member.contingency}%` || '0%',
-            formatCurrency(member.total || 0)
-        ]),
-        theme: 'grid',
-        headStyles: { fillColor: [240, 109, 13], textColor: [255, 255, 255] },
-        margin: { left: 20, right: 20 },
-        styles: { fontSize: 8 }
-    });
-}
+    if (costs.teamCosts) {
+        doc.autoTable({
+            startY: 30,
+            head: [['Role', 'Persons', 'Validation Days', 'Scoping Days', 'Execution Days', 'Rate', 'Contingency', 'Total']],
+            body: costs.teamCosts.map((member, index) => {
+                const persons = parseFloat(member.persons) || 0;
+                const rate = parseFloat(member.rate) || 0;
+                const validationDays = parseFloat(member.validationDays) || 0;
+                const scopingDays = parseFloat(member.scopingDays) || 0;
+                const executionDays = parseFloat(member.executionDays) || 0;
+                const contingency = parseFloat(member.contingency) || 0;
+    
+                // Calculate total with contingency
+                const total = (persons * rate * (validationDays + scopingDays + executionDays)) * (1 + contingency/100);
+    
+                return [
+                    index === 0 ? 'Project Manager' :
+                    index === 1 ? 'Solution Architecture' :
+                    index === 2 ? 'Business Analyst' :
+                    index === 3 ? 'Developer' :
+                    index === 4 ? 'Tester' :
+                    index === 5 ? 'Local IT' : 'Unknown',
+                    member.persons || '0',
+                    member.validationDays || '0',
+                    member.scopingDays || '0',
+                    member.executionDays || '0',
+                    formatCurrency(member.rate || 0),
+                    `${member.contingency}%` || '0%',
+                    formatCurrency(total)
+                ];
+            }),
+            theme: 'grid',
+            headStyles: { fillColor: [240, 109, 13], textColor: [255, 255, 255] },
+            margin: { left: 20, right: 20 },
+            styles: { fontSize: 8 }
+        });
+    }
 
 // Technology Costs
 if (costs.techCosts) {
@@ -588,17 +698,29 @@ if (costs.externalCosts) {
     doc.autoTable({
         startY: doc.lastAutoTable.finalY + 30,
         head: [['Item', 'One-time Cost', 'Monthly Cost', 'Duration', 'Contingency', 'Description', 'Total']],
-        body: costs.externalCosts.map((ext, index) => [
-            index === 0 ? 'Vendors' :
-            index === 1 ? 'Consultants' :
-            index === 2 ? 'Training & expenses' : 'Other',
-            formatCurrency(ext['external-cost'] || 0),
-            formatCurrency(ext['external-monthly'] || 0),
-            `${ext['external-duration'] || 0} months`,
-            `${ext['external-contingency']}%` || '0%',
-            ext.description || '',
-            formatCurrency(ext.total || 0)
-        ]),
+        body: costs.externalCosts.map((ext, index) => {
+            const oneTime = parseFloat(ext['external-cost']) || 0;
+            const monthly = parseFloat(ext['external-monthly']) || 0;
+            const duration = parseFloat(ext['external-duration']) || 0;
+            const contingency = parseFloat(ext['external-contingency']) || 0;
+
+            // Calculate total with contingency
+            const monthlyTotal = monthly * duration;
+            const subtotal = oneTime + monthlyTotal;
+            const total = subtotal * (1 + contingency/100);
+
+            return [
+                index === 0 ? 'Vendors' :
+                index === 1 ? 'Consultants' :
+                index === 2 ? 'Training & expenses' : 'Other',
+                formatCurrency(oneTime),
+                formatCurrency(monthly),
+                `${duration} months`,
+                `${contingency}%`,
+                ext.description || '',
+                formatCurrency(total)
+            ];
+        }),
         theme: 'grid',
         headStyles: { fillColor: [240, 109, 13], textColor: [255, 255, 255] },
         margin: { left: 20, right: 20 },
@@ -636,8 +758,11 @@ if (values.oneOff) {
         doc.autoTable({
             startY: doc.lastAutoTable.finalY + 30,
             head: [['Category', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Description']],
-            body: values.recurring.map(item => [
-                'Recurring Value',
+            body: values.recurring.map((item, index) => [
+                index === 0 ? 'License cost reduction' :
+                index === 1 ? 'Maintenance savings' :
+                index === 2 ? 'Efficiency gains (FTE)' :
+                index === 3 ? 'Other value' : 'Additional value',
                 formatCurrency(item.year1 || 0),
                 formatCurrency(item.year2 || 0),
                 formatCurrency(item.year3 || 0),
@@ -663,6 +788,8 @@ if (values.oneOff) {
         startY: 30,
         head: [['Metric', 'Value']],
         body: [
+            ['Project Cost', data.projectCost],
+            ['Maintenance & support', data.tco],
             ['Return on Investment', data.roi],
             ['Payback Period', data.paybackPeriod],
             ['Net Benefit', data.netBenefit]
@@ -674,7 +801,7 @@ if (values.oneOff) {
         },
         margin: { left: 30 },
         columnStyles: {
-            0: { cellWidth: 50 }
+            0: { cellWidth: 80 }  // Increased width to accommodate longer text
         }
     });
 
@@ -745,6 +872,7 @@ function loadProjectInfo() {
     document.getElementById('summaryProjectName').textContent = assessment.projectName || 'No project name';
     document.getElementById('summaryProjectOwner').textContent = assessment.projectOwner || 'No owner specified';
     document.getElementById('summaryDepartment').textContent = assessment.department || 'No department specified';
+    document.getElementById('summaryPlatforms').textContent = assessment.platforms ? assessment.platforms.join(', ') : 'None selected';
     document.getElementById('summaryEstimatedBy').textContent = assessment.estimatedBy || 'Not specified';
 }
 

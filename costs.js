@@ -98,6 +98,7 @@ function loadProjectInfo() {
         assessment.projectOwner || 'No owner specified';
     document.getElementById('summaryDepartment').textContent =
         assessment.department || 'No department specified';
+        
     document.getElementById('summaryEstimatedBy').textContent =
         assessment.estimatedBy || 'Not specified';
     document.getElementById('summaryRiskAdjustment').textContent =
@@ -308,6 +309,7 @@ function updateTotalCosts() {
         calculateCapexOpexSplit(teamCosts, techCosts, externalCosts, riskAmount);
     }
     updateCharts();
+    calculateProjectCostAndTCO();
 }
 
 function saveCosts() {
@@ -1086,4 +1088,35 @@ function updateCharts() {
     } catch (error) {
         console.error('Error updating charts:', error);
     }
+}
+function calculateProjectCostAndTCO() {
+    // Get phase costs
+    const validationCost = parseCurrency(document.getElementById('validationPhaseCost').textContent);
+    const scopingCost = parseCurrency(document.getElementById('scopingPhaseCost').textContent);
+    const executionCost = parseCurrency(document.getElementById('executionPhaseCost').textContent);
+
+    // Get one-time and recurring tech costs
+    const oneTimeTechCosts = calculateOneTimeTechCosts();
+    const recurringTechCosts = parseCurrency(document.getElementById('totalTechCosts').textContent) - oneTimeTechCosts;
+
+    // Get external costs
+    const externalCosts = parseCurrency(document.getElementById('totalExternalCosts').textContent);
+
+    // Get risk adjustment
+    const riskText = document.getElementById('summaryRiskAdjustment').textContent;
+    const riskPercentage = parseFloat(riskText) || 0;
+
+    // Calculate Project Cost (similar to CAPEX)
+    const baseProjectCost = scopingCost + executionCost + oneTimeTechCosts + externalCosts;
+    const projectRiskAmount = baseProjectCost * (riskPercentage / 100);
+    const totalProjectCost = baseProjectCost + projectRiskAmount;
+
+    // Calculate TCO (validation + recurring costs)
+    const baseTCO = validationCost + recurringTechCosts;
+    const tcoRiskAmount = baseTCO * (riskPercentage / 100);
+    const totalTCO = baseTCO + tcoRiskAmount;
+
+    // Update display
+    document.getElementById('totalProjectCost').textContent = formatCurrency(totalProjectCost);
+    document.getElementById('totalTCO').textContent = formatCurrency(totalTCO);
 }
