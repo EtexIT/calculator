@@ -34,7 +34,7 @@
         <main class="content" role="main">
             <div class="home-container">
                 <div class="welcome-section">
-                    <h1>IT Business Case Calculator</h1>
+                    <h1>IT Project ROI Calculator</h1>
                     <p>A comprehensive tool created by IT, for calculating IT project Return on Investment.</p>
                 </div>
 
@@ -86,7 +86,26 @@
                         </ol>
                     </div>
                 </div>
-        
+                <section class="section value-section">
+                    <h2>Share Project Data</h2>
+                    <div class="share-container">
+                        <!-- Export Section -->
+                        <div class="share-item">
+                            <button id="exportProject" class="btn-primary">Export Project</button>
+                            <p class="share-description">Save all project data to a file that can be shared with others</p>
+                        </div>
+                
+                        <!-- Import Section -->
+                        <div class="share-item">
+                            <input type="file" id="importProject" accept=".json" style="display: none;">
+                            <button onclick="document.getElementById('importProject').click();" class="btn-secondary">Import Project</button>
+                            <p class="share-description">Load project data from a shared file</p>
+                        </div>
+                
+                        <!-- Status Messages -->
+                        <div id="shareStatus"></div>
+                    </div>
+                </section> 
                 <div class="contact-section">
                     <h2>Questions or Feedback?</h2>
                     <div class="contact-card">
@@ -94,12 +113,13 @@
                         <a href="mailto:arne.rotty@etexgroup.com" class="contact-email">arne.rotty@etexgroup.com</a>
                     </div>
                 </div>
-        
+                     
                 <div class="action-section">
                     <a href="assessment.html" class="btn-primary">Start New Assessment</a>
                     <a href="instructions.html" class="btn-secondary">View Instructions</a>
                 </div>
             </div>
         </main>
+        <script src="index.js"></script>
 </body>
 </html>

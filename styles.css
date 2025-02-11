@@ -1307,3 +1307,32 @@ select[multiple] option:checked {
     white-space: normal;
     font-weight: normal;
 }
+
+.share-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1rem 0;
+}
+
+.share-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.share-description {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+#shareStatus {
+    margin-top: 1rem;
+}
+
+#shareStatus div {
+    padding: 0.75rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
