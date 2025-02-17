@@ -15,9 +15,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function loadFinancialData() {
-    // Load costs from localStorage
+    // Load costs and values from localStorage
     const costs = JSON.parse(localStorage.getItem('projectCosts') || '{}');
-    // Load values from localStorage
     const values = JSON.parse(localStorage.getItem('projectValue') || '{}');
     
     console.log('Loaded costs:', costs);
@@ -28,23 +27,22 @@ function loadFinancialData() {
         return;
     }
 
-    // Calculate metrics
-    const projectCost = calculateProjectCost(costs);
-    const tco = calculateTCO(costs);
-
-    console.log('Project Cost:', projectCost);
-    console.log('TCO:', tco);
-
-    // Update display with new metrics
-    document.getElementById('projectCostValue').textContent = formatCurrency(projectCost);
-    document.getElementById('tcoValue').textContent = formatCurrency(tco);
+    // Get the values from the saved summary
+    if (costs.summary) {
+        document.getElementById('projectCostValue').textContent = 
+            formatCurrency(costs.summary.totalProjectCost || 0);
+        document.getElementById('tcoValue').textContent = 
+            formatCurrency(costs.summary.totalMaintenanceCost || 0);
+    }
 
     calculateFinancialMetrics(costs, values);
 }
 
 function calculateProjectCost(costs) {
     let projectCost = 0;
-    
+    const assessment = JSON.parse(localStorage.getItem('projectAssessment') || '{}');
+    const riskPercentage = parseFloat(assessment.riskAdjustment) / 100 || 0;
+
     // Calculate team costs for scoping and execution phases
     if (costs.teamCosts) {
         costs.teamCosts.forEach(member => {
@@ -70,18 +68,14 @@ function calculateProjectCost(costs) {
     // Add external costs
     if (costs.externalCosts) {
         costs.externalCosts.forEach(external => {
-            const cost = parseFloat(external['external-cost']) || 0;
+            const oneTimeCost = parseFloat(external['external-cost']) || 0;
             const contingency = (parseFloat(external['external-contingency']) || 0) / 100;
-            projectCost += cost * (1 + contingency);
+            projectCost += oneTimeCost * (1 + contingency);
         });
     }
 
-    // Apply risk adjustment
-    const assessment = JSON.parse(localStorage.getItem('projectAssessment') || '{}');
-    if (assessment.riskAdjustment) {
-        const riskPercentage = parseFloat(assessment.riskAdjustment) / 100;
-        projectCost *= (1 + riskPercentage);
-    }
+    // Apply risk adjustment at the end
+    projectCost *= (1 + riskPercentage);
 
     return projectCost;
 }
@@ -790,6 +784,10 @@ if (values.oneOff) {
         body: [
             ['Project Cost', data.projectCost],
             ['Maintenance & support', data.tco],
+            ['Risk Adjustment', assessment.riskAdjustment || '0%'],
+            ['Total Cost of Ownership (TCO)', formatCurrency(
+                parseCurrency(data.projectCost) + parseCurrency(data.tco)
+            )],
             ['Return on Investment', data.roi],
             ['Payback Period', data.paybackPeriod],
             ['Net Benefit', data.netBenefit]
@@ -801,7 +799,7 @@ if (values.oneOff) {
         },
         margin: { left: 30 },
         columnStyles: {
-            0: { cellWidth: 80 }  // Increased width to accommodate longer text
+            0: { cellWidth: 80 }  // Width for metric names
         }
     });
 

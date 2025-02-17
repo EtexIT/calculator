@@ -501,10 +501,15 @@ function collectExternalCosts() {
 }
 
 function collectSummary() {
-    // Collection logic for summary
-    // ... Implementation details
+    return {
+        totalProjectCost: parseCurrency(document.getElementById('totalProjectCost').textContent),
+        totalMaintenanceCost: parseCurrency(document.getElementById('totalTCO').textContent),
+        teamCosts: parseCurrency(document.getElementById('summaryTeamCosts').textContent),
+        techCosts: parseCurrency(document.getElementById('summaryTechCosts').textContent),
+        externalCosts: parseCurrency(document.getElementById('summaryExternalCosts').textContent),
+        riskAmount: parseCurrency(document.getElementById('summaryRiskAmount').textContent)
+    };
 }
-
 function restoreTeamCosts(teamCosts) {
     // Restoration logic for team costs
     // ... Implementation details
@@ -1029,4 +1034,10 @@ function calculateProjectCostAndTCO() {
     // Update display
     document.getElementById('totalProjectCost').textContent = formatCurrency(totalProjectCost);
     document.getElementById('totalTCO').textContent = formatCurrency(totalTCO);
+
+    // Store these values in localStorage so business case can access them
+    const costs = JSON.parse(localStorage.getItem('projectCosts') || '{}');
+    costs.totalProjectCost = totalProjectCost;
+    costs.totalTCO = totalTCO;
+    localStorage.setItem('projectCosts', JSON.stringify(costs));
 }
