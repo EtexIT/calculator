@@ -3,23 +3,26 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load project information from assessment
     loadProjectInfo();
     
+    // Initialize charts first before doing any other operations
+    initializeCharts();
+    
     // Add input event listeners
     addInputListeners();
     
     // Load saved values if available
     loadSavedValues();
 
-    // Initialize charts
-    initializeCharts();
-
     // Add button event listeners
     document.getElementById('saveValue').addEventListener('click', saveValues);
     document.getElementById('resetValue').addEventListener('click', resetValues);
 
+    // Update charts again after loading values to make sure they reflect the data
+    updateCharts();
+
     const nextButton = document.getElementById('nextButton');
-    const savedData = localStorage.getItem('projectCosts'); // or 'projectValue' for value.js
-    if (savedData) {
-        nextButton.disabled = false;
+    if (nextButton) {
+        nextButton.disabled = !localStorage.getItem('projectValue');
+        nextButton.onclick = () => window.location.href = 'business-case.html';
     }
 });
 

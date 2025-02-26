@@ -162,16 +162,25 @@ function processYearlyData(costs, values) {
         });
     }
 
-    // External costs
+    // External costs - Fix here to handle one-time and monthly costs
     if (costs.externalCosts) {
-        const totalExternalCosts = costs.externalCosts.reduce((sum, external) => {
-            const cost = parseFloat(external['external-cost']) || 0;
+        costs.externalCosts.forEach(external => {
+            // One-time external costs
+            const oneTimeCost = parseFloat(external['external-cost']) || 0;
             const contingency = (parseFloat(external['external-contingency']) || 0) / 100;
-            return sum + (cost * (1 + contingency));
-        }, 0);
-        
-        // Add external costs to first year
-        yearlyData[0].costs += totalExternalCosts;
+            
+            // Add one-time costs to first year
+            yearlyData[0].costs += oneTimeCost * (1 + contingency);
+            
+            // Monthly external costs
+            const monthly = parseFloat(external['external-monthly']) || 0;
+            const duration = parseFloat(external['external-duration']) || 0;
+            
+            // Distribute monthly costs across years with contingency
+            for (let i = 0; i < Math.min(duration/12, 5); i++) {
+                yearlyData[i].costs += monthly * 12 * (1 + contingency);
+            }
+        });
     }
 
     // Process values
@@ -306,19 +315,29 @@ let cashFlowChart;
 let accumulatedBenefitChart;
 
 function calculatePaybackPeriod(yearlyData) {
+    // If first year already has positive net flow, calculate within first year
+    if (yearlyData[0].netFlow > 0) {
+        // If first year has positive net flow, payback is fraction of year
+        return yearlyData[0].costs / (yearlyData[0].oneOffValue + yearlyData[0].recurringValue);
+    }
+    
+    // For subsequent years, check when accumulated becomes positive
     let accumulated = 0;
     for (let i = 0; i < yearlyData.length; i++) {
         accumulated += yearlyData[i].netFlow;
         if (accumulated >= 0) {
-            // If we recover the investment in the first year
             if (i === 0) {
-                // Only calculate partial year if we have positive net flow
-                return yearlyData[i].netFlow > 0 ? 
-                    (yearlyData[i].costs / yearlyData[i].netFlow) : 5;
+                return yearlyData[i].costs / (yearlyData[i].oneOffValue + yearlyData[i].recurringValue);
+            } else {
+                // If previous accumulated was negative, calculate fraction of current year
+                const previousAccumulated = accumulated - yearlyData[i].netFlow;
+                // Only if current net flow is positive
+                if (yearlyData[i].netFlow > 0) {
+                    return i + (Math.abs(previousAccumulated) / Math.abs(yearlyData[i].netFlow));
+                } else {
+                    return i;
+                }
             }
-            // Calculate fraction of year when we break even
-            const previousAccumulated = accumulated - yearlyData[i].netFlow;
-            return i + (Math.abs(previousAccumulated) / Math.abs(yearlyData[i].netFlow));
         }
     }
     return 5; // If payback period is longer than 5 years
