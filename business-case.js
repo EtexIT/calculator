@@ -41,7 +41,7 @@ function loadFinancialData() {
 function calculateProjectCost(costs) {
     let projectCost = 0;
     const assessment = JSON.parse(localStorage.getItem('projectAssessment') || '{}');
-    const riskPercentage = parseFloat(assessment.riskAdjustment) / 100 || 0;
+    const riskPercentage = parseFloat(assessment.riskAdjustment.replace('%', '')) / 100 || 0;
 
     // Calculate team costs for scoping and execution phases
     if (costs.teamCosts) {
@@ -107,7 +107,7 @@ function calculateTCO(costs) {
     // Apply risk adjustment
     const assessment = JSON.parse(localStorage.getItem('projectAssessment') || '{}');
     if (assessment.riskAdjustment) {
-        const riskPercentage = parseFloat(assessment.riskAdjustment) / 100;
+        const riskPercentage = parseFloat(assessment.riskAdjustment.replace('%', '')) / 100 || 0;
         tco *= (1 + riskPercentage);
     }
 
@@ -202,7 +202,7 @@ function processYearlyData(costs, values) {
     // Apply risk adjustment from assessment if available
     const assessment = JSON.parse(localStorage.getItem('projectAssessment') || '{}');
     if (assessment.riskAdjustment) {
-        const riskPercentage = parseFloat(assessment.riskAdjustment) / 100;
+        const riskPercentage = parseFloat(assessment.riskAdjustment.replace('%', '')) / 100 || 0;
         yearlyData.forEach(year => {
             year.costs *= (1 + riskPercentage);
         });
@@ -611,27 +611,45 @@ function exportPDF() {
     
     // Assessment Outcome section
     doc.setFontSize(16);
-    doc.setTextColor(240, 109, 13);
-    doc.text('Assessment Outcome', 20, doc.lastAutoTable.finalY + 20);
+doc.setTextColor(240, 109, 13);
+doc.text('Assessment Outcome', 20, doc.lastAutoTable.finalY + 20);
 
-    doc.autoTable({
-        startY: doc.lastAutoTable.finalY + 30,
-        head: [['Assessment', 'Result']],
-        body: [
-            ['Total Score', assessment.totalScore],
-            ['Risk Adjustment', assessment.riskAdjustment],
-            ['PMO Approach', assessment.recommendedApproach]
-        ],
-        theme: 'grid',
-        headStyles: { 
-            fillColor: [240, 109, 13],
-            textColor: [255, 255, 255]
-        },
-        margin: { left: 30 },
-        columnStyles: {
-            0: { cellWidth: 50 }
-        }
-    });
+// Build the assessment table body
+let assessmentBody = [
+    ['Total Score', assessment.totalScore]
+];
+
+// Add risk adjustment info with override explanation if applicable
+if (assessment.isRiskOverridden) {
+    // If risk was overridden, show that info
+    assessmentBody.push(['Risk Adjustment', `${assessment.riskAdjustment} (Overridden)`]);
+    
+    // Add override reason right after risk adjustment
+    if (assessment.overrideReason) {
+        assessmentBody.push(['Override Reason', assessment.overrideReason]);
+    }
+} else {
+    // Standard risk adjustment
+    assessmentBody.push(['Risk Adjustment', assessment.riskAdjustment]);
+}
+
+// Add PMO approach at the end
+assessmentBody.push(['PMO Approach', assessment.recommendedApproach]);
+
+doc.autoTable({
+    startY: doc.lastAutoTable.finalY + 30,
+    head: [['Assessment', 'Result']],
+    body: assessmentBody,
+    theme: 'grid',
+    headStyles: { 
+        fillColor: [240, 109, 13],
+        textColor: [255, 255, 255]
+    },
+    margin: { left: 30 },
+    columnStyles: {
+        0: { cellWidth: 50 }
+    }
+});
 
     // Cost Breakdown section - New page
     doc.addPage();
@@ -891,6 +909,12 @@ function loadProjectInfo() {
     document.getElementById('summaryDepartment').textContent = assessment.department || 'No department specified';
     document.getElementById('summaryPlatforms').textContent = assessment.platforms ? assessment.platforms.join(', ') : 'None selected';
     document.getElementById('summaryEstimatedBy').textContent = assessment.estimatedBy || 'Not specified';
+    
+    // Add this line to update risk adjustment display if a field with this ID exists
+    const riskElem = document.getElementById('summaryRiskAdjustment');
+    if (riskElem && assessment.riskAdjustment) {
+        riskElem.textContent = assessment.riskAdjustment;
+    }
 }
 
 function showNoAssessmentMessage() {

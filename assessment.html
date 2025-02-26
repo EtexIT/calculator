@@ -219,6 +219,21 @@
                                 This risk adjustment factor should be applied to the total project cost
                                 to account for the identified risk level.
                             </p>
+                            <div class="risk-override">
+                                <label for="overrideRisk" class="override-label">
+                                    <input type="checkbox" id="overrideRisk"> Override risk adjustment
+                                </label>
+                                <div class="override-inputs" style="display: none;">
+                                    <div class="form-group">
+                                        <label for="customRisk">Custom Risk Percentage (%)</label>
+                                        <input type="number" id="customRisk" min="0" max="100" step="1" disabled>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="overrideReason">Reason for override</label>
+                                        <textarea id="overrideReason" rows="3" disabled></textarea>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

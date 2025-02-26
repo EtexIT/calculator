@@ -41,8 +41,22 @@
                         <li>Project Name</li>
                         <li>Project Owner</li>
                         <li>Division/Department</li>
+                        <li>Platforms (multiple can be selected)</li>
                         <li>Date</li>
                         <li>Estimated By</li>
+                    </ul>
+
+                    <h3>Characteristics Assessment</h3>
+                    <p>Score each project characteristic on a scale of 1-3 (Low, Medium, High):</p>
+                    <ul>
+                        <li>Budget</li>
+                        <li>Duration</li>
+                        <li>Team Size</li>
+                        <li>Stakeholders</li>
+                        <li>Strategic Importance</li>
+                        <li>Complexity</li>
+                        <li>Risk Level</li>
+                        <li>Regulatory Requirements</li>
                     </ul>
                 </div>
             </section>
@@ -58,6 +72,15 @@
                         <li><strong>13-16 points:</strong> 15% risk adjustment</li>
                         <li><strong>8-12 points:</strong> 10% risk adjustment</li>
                     </ul>
+                    
+                    <h3>Risk Adjustment Override</h3>
+                    <p>If needed, you can override the calculated risk adjustment:</p>
+                    <ul>
+                        <li>Check the "Override risk adjustment" box</li>
+                        <li>Enter a custom risk percentage</li>
+                        <li>Provide a reason for the override (required)</li>
+                    </ul>
+                    <p>The override reason will be included in the business case report.</p>
     
                     <h3>PMO Approach</h3>
                     <p>The assessment will recommend one of four PMO approaches:</p>
@@ -74,7 +97,15 @@
                 <h2>3. Cost Estimation</h2>
                 <div class="instruction-card">
                     <h3>Team Costs</h3>
-                    <h4>Validation Phase</h4>
+                    <p>Enter the number of persons, daily rate, working days, and contingency for each role across three phases:</p>
+                    <ul>
+                        <li><strong>Validation Phase:</strong> Initial assessment and planning</li>
+                        <li><strong>Scoping Phase:</strong> Detailed requirements and design</li>
+                        <li><strong>Execution Phase:</strong> Implementation and delivery</li>
+                    </ul>
+
+                    <h4>Recommended Team Allocation</h4>
+                    <h5>Validation Phase</h5>
                     <ul>
                         <li>Project Manager: 2-3 days per BPO area / L1 capability</li>
                         <li>Solution Architecture: 3-5 days for initial assessment</li>
@@ -83,7 +114,7 @@
                         <li>Tester: 1-2 days for test strategy</li>
                     </ul>
     
-                    <h4>Scoping Phase</h4>
+                    <h5>Scoping Phase</h5>
                     <ul>
                         <li>Project Manager: 15-20% of total project duration</li>
                         <li>Solution Architecture: 10-15 days for detailed design</li>
@@ -92,7 +123,7 @@
                         <li>Tester: 5-8 days for test planning</li>
                     </ul>
     
-                    <h4>Execution Phase</h4>
+                    <h5>Execution Phase</h5>
                     <ul>
                         <li>Project Manager: 20% of development effort</li>
                         <li>Solution Architecture: 15% of development effort</li>
@@ -108,9 +139,10 @@
                     <ul>
                         <li>One-time initial investments and purchases</li>
                         <li>Monthly recurring charges</li>
-                        <li>Duration for recurring costs</li>
-                        <li>Data migration costs</li>
+                        <li>Duration for recurring costs (in months)</li>
+                        <li>Description for each item</li>
                     </ul>
+                    <p>The system calculates both the one-time costs and the recurring costs over the specified duration.</p>
                 </div>
     
                 <div class="instruction-card">
@@ -118,9 +150,27 @@
                     <ul>
                         <li>Vendors and service providers</li>
                         <li>External consultants</li>
-                        <li>Training costs</li>
+                        <li>Training costs and expenses</li>
                     </ul>
-                    <p>Remember to include appropriate contingency for external costs.</p>
+                    <p>For external costs, you can specify:</p>
+                    <ul>
+                        <li>One-time costs</li>
+                        <li>Monthly costs</li>
+                        <li>Duration (in months)</li>
+                        <li>Contingency percentage</li>
+                        <li>Description</li>
+                    </ul>
+                </div>
+
+                <div class="instruction-card">
+                    <h3>CAPEX/OPEX Classification</h3>
+                    <p>You can specify if this is a CAPEX project by checking the corresponding box.</p>
+                    <p>The system will automatically calculate:</p>
+                    <ul>
+                        <li><strong>CAPEX:</strong> Scoping and execution phase costs, one-time tech costs, and external costs</li>
+                        <li><strong>OPEX:</strong> Validation phase costs and recurring technology costs</li>
+                    </ul>
+                    <p>Risk adjustment is proportionally applied to both CAPEX and OPEX components.</p>
                 </div>
             </section>
     
@@ -128,6 +178,7 @@
                 <h2>4. Value Assessment</h2>
                 <div class="instruction-card">
                     <h3>One-off Value</h3>
+                    <p>Enter any one-time benefits expected from the project:</p>
                     <ul>
                         <li>Hardware savings from decommissioning</li>
                         <li>Inventory reduction opportunities</li>
@@ -136,17 +187,17 @@
                     </ul>
     
                     <h3>Recurring Value (5-year period)</h3>
+                    <p>Enter recurring benefits for each of the 5 years:</p>
                     <ul>
                         <li>License cost reductions</li>
                         <li>Maintenance savings</li>
                         <li>Efficiency gains (FTE)</li>
-                        <li>Process improvements</li>
-                        <li>Cost avoidance</li>
+                        <li>Other value</li>
                     </ul>
     
                     <h3>Guidelines</h3>
                     <ul>
-                        <li>Document all assumptions</li>
+                        <li>Document all assumptions in the description fields</li>
                         <li>Use conservative estimates</li>
                         <li>Include only quantifiable benefits</li>
                         <li>Validate numbers with stakeholders</li>
@@ -162,16 +213,50 @@
                         <li><strong>Return on Investment (ROI)</strong> - Measures profitability relative to investment</li>
                         <li><strong>Payback Period</strong> - Time needed to break even on investment</li>
                         <li><strong>Net Benefit</strong> - Total value minus total costs</li>
+                        <li><strong>Project Cost</strong> - Scoping and execution costs with risk adjustment</li>
+                        <li><strong>Maintenance Cost</strong> - Validation phase and recurring costs</li>
+                    </ul>
+
+                    <h3>Financial Overview</h3>
+                    <p>The business case presents a 5-year financial overview showing:</p>
+                    <ul>
+                        <li>Year-by-year costs</li>
+                        <li>One-off values</li>
+                        <li>Recurring values</li>
+                        <li>Net cash flow</li>
+                        <li>Accumulated benefit</li>
                     </ul>
     
-                    <h3>Review Guidelines</h3>
+                    <h3>Export Options</h3>
+                    <p>You can export the complete business case as a PDF document including:</p>
                     <ul>
-                        <li>Verify all calculations</li>
-                        <li>Challenge assumptions</li>
-                        <li>Consider timing of costs vs. benefits</li>
-                        <li>Review risk adjustments</li>
-                        <li>Ensure completeness of data</li>
+                        <li>Project information</li>
+                        <li>Assessment outcomes (including risk adjustment overrides if applicable)</li>
+                        <li>Cost breakdown</li>
+                        <li>Value summary</li>
+                        <li>Financial metrics and projections</li>
+                        <li>Visual charts for cash flow and accumulated benefit</li>
                     </ul>
+                </div>
+            </section>
+
+            <section class="instruction-section">
+                <h2>6. Sharing Projects</h2>
+                <div class="instruction-card">
+                    <h3>Export Project Data</h3>
+                    <p>From the Home page, you can export your project data as a JSON file:</p>
+                    <ul>
+                        <li>Click "Export Project" to download a JSON file containing all project data</li>
+                        <li>Share this file with colleagues for collaboration</li>
+                    </ul>
+
+                    <h3>Import Project Data</h3>
+                    <p>You can also import previously exported project data:</p>
+                    <ul>
+                        <li>Click "Import Project" and select your JSON file</li>
+                        <li>Review and confirm to load the imported project data</li>
+                    </ul>
+                    <p>Note: Importing will overwrite any current project data in the calculator.</p>
                 </div>
             </section>
         </div>

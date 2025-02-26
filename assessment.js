@@ -18,15 +18,67 @@ document.addEventListener('DOMContentLoaded', function () {
     // Add score range info
     addScoreRangeInfo();
 
-        // Add event listeners
-        addInputListeners();
+    // Add event listeners
+    addInputListeners();
 
     // Calculate initial score
     calculateScore();
+    
+    // Enable next button if data is saved
     const nextButton = document.getElementById('nextButton');
-    const savedData = localStorage.getItem('projectAssessment'); // or 'projectCosts' or 'projectValue'
+    const savedData = localStorage.getItem('projectAssessment');
     if (savedData) {
         nextButton.disabled = false;
+    }
+    
+    // Set up risk adjustment override functionality
+    console.log("Setting up override checkbox");
+    const overrideCheckbox = document.getElementById('overrideRisk');
+    console.log("Override checkbox:", overrideCheckbox);
+    
+    if (overrideCheckbox) {
+        const customRiskInput = document.getElementById('customRisk');
+        const overrideReason = document.getElementById('overrideReason');
+        const overrideInputs = document.querySelector('.override-inputs');
+        
+        console.log("Override elements:", {
+            checkbox: overrideCheckbox,
+            input: customRiskInput,
+            reason: overrideReason,
+            container: overrideInputs
+        });
+        
+        overrideCheckbox.addEventListener('change', function() {
+            console.log("Checkbox changed:", this.checked);
+            const isChecked = this.checked;
+            
+            if (overrideInputs) {
+                overrideInputs.style.display = isChecked ? 'block' : 'none';
+            }
+            
+            if (customRiskInput) {
+                customRiskInput.disabled = !isChecked;
+                if (isChecked) {
+                    customRiskInput.value = document.getElementById('riskAdjustment').textContent.replace('%', '');
+                }
+            }
+            
+            if (overrideReason) {
+                overrideReason.disabled = !isChecked;
+            }
+            
+            if (!isChecked) {
+                updateRecommendation(parseInt(document.getElementById('totalScore').textContent));
+            }
+        });
+        
+        if (customRiskInput) {
+            customRiskInput.addEventListener('input', function() {
+                if (this.value && !this.disabled) {
+                    document.getElementById('riskAdjustment').textContent = `${this.value}%`;
+                }
+            });
+        }
     }
 });
 
@@ -115,6 +167,21 @@ function validateForm() {
             element.classList.remove('invalid');
         }
     });
+    const overrideCheckbox = document.getElementById('overrideRisk');
+if (overrideCheckbox && overrideCheckbox.checked) {
+    const customRisk = document.getElementById('customRisk').value;
+    const reason = document.getElementById('overrideReason').value;
+    
+    if (!customRisk) {
+        alert('Please specify a custom risk percentage.');
+        return false;
+    }
+    
+    if (!reason.trim()) {
+        alert('Please provide a reason for overriding the risk adjustment.');
+        return false;
+    }
+}
     return isValid;
 }
 
@@ -135,7 +202,10 @@ function saveAssessment() {
         scores: {},
         totalScore: document.getElementById('totalScore').textContent,
         recommendedApproach: document.getElementById('recommendedApproach').textContent,
-        riskAdjustment: document.getElementById('riskAdjustment').textContent
+        riskAdjustment: document.getElementById('riskAdjustment').textContent,
+        isRiskOverridden: document.getElementById('overrideRisk').checked,
+customRiskValue: document.getElementById('customRisk').value,
+overrideReason: document.getElementById('overrideReason').value
     };
 
     document.querySelectorAll('.score-select').forEach(select => {
@@ -178,8 +248,6 @@ function loadSavedAssessment() {
         }
         document.getElementById('date').value = assessment.date ?? '';
         document.getElementById('estimatedBy').value = assessment.estimatedBy ?? '';
-        document.getElementById('date').value = assessment.date ?? '';
-        document.getElementById('estimatedBy').value = assessment.estimatedBy ?? '';
 
         // Load all scores with null checks
         if (assessment.scores) {
@@ -187,6 +255,29 @@ function loadSavedAssessment() {
                 const select = document.getElementById(id);
                 if (select) {
                     select.value = value ?? '1'; // Default to 1 if no value
+                }
+            }
+        }
+
+        // Check if risk is overridden and handle that case
+        if (assessment.isRiskOverridden) {
+            const overrideCheckbox = document.getElementById('overrideRisk');
+            const customRiskInput = document.getElementById('customRisk');
+            const overrideReason = document.getElementById('overrideReason');
+            const overrideInputs = document.querySelector('.override-inputs');
+        
+            if (overrideCheckbox) {
+                overrideCheckbox.checked = true;
+                if (overrideInputs) {
+                    overrideInputs.style.display = 'block';
+                }
+                if (customRiskInput) {
+                    customRiskInput.disabled = false;
+                    customRiskInput.value = assessment.customRiskValue || '';
+                }
+                if (overrideReason) {
+                    overrideReason.disabled = false;
+                    overrideReason.value = assessment.overrideReason || '';
                 }
             }
         }
