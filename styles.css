@@ -1375,3 +1375,86 @@ select[multiple] option:checked {
     border-radius: 4px;
     resize: vertical;
 }
+
+.value-comments-section {
+    background-color: var(--white);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.comments-display {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 4px;
+    border-left: 4px solid var(--primary-color);
+}
+
+.no-comments {
+    color: #999;
+    font-style: italic;
+}
+
+.risk-override-reason {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #e25822;
+    padding: 0.5rem;
+    background-color: #fff3e0;
+    border-radius: 4px;
+}
+
+.risk-adjustment-section {
+    background-color: var(--white);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#overrideReasonContainer {
+    background-color: #fff3e0;
+    border-left: 4px solid #e25822;
+}
+
+.value-comments-section {
+    background-color: var(--white);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.comments-container {
+    margin-top: 1rem;
+}
+
+.help-text {
+    color: #666;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+}
+
+#valueComments {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 1rem;
+    min-height: 120px;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+#valueComments:focus {
+    border-color: var(--primary-color);
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(240, 109, 13, 0.25);
+}
+
+#valueComments::placeholder {
+    color: #adb5bd;
+    font-style: italic;
+}

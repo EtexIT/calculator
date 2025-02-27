@@ -217,6 +217,21 @@ function processYearlyData(costs, values) {
     });
 
     return yearlyData;
+
+    // Value Comments section
+if (values.comments && values.comments.trim()) {
+    doc.text('Value Calculation Notes', 20, doc.lastAutoTable.finalY + 20);
+    doc.setFontSize(10);
+    doc.setTextColor(80);
+    
+    // Split comments into lines to ensure proper text wrapping
+    const splitComments = doc.splitTextToSize(values.comments, 170);
+    doc.text(splitComments, 20, doc.lastAutoTable.finalY + 35);
+    
+    // Reset font size and color
+    doc.setFontSize(16);
+    doc.setTextColor(240, 109, 13);
+}
 }
 
 function updateFinancialTable(yearlyData) {
@@ -614,7 +629,7 @@ function exportPDF() {
 doc.setTextColor(240, 109, 13);
 doc.text('Assessment Outcome', 20, doc.lastAutoTable.finalY + 20);
 
-// Build the assessment table body
+// Build the assessment table body with all relevant information
 let assessmentBody = [
     ['Total Score', assessment.totalScore]
 ];
@@ -633,8 +648,13 @@ if (assessment.isRiskOverridden) {
     assessmentBody.push(['Risk Adjustment', assessment.riskAdjustment]);
 }
 
-// Add PMO approach at the end
+// Add PMO approach
 assessmentBody.push(['PMO Approach', assessment.recommendedApproach]);
+
+// Add value calculation notes if available
+if (values.comments && values.comments.trim()) {
+    assessmentBody.push(['Value Calculation Notes', values.comments]);
+}
 
 doc.autoTable({
     startY: doc.lastAutoTable.finalY + 30,
@@ -648,9 +668,73 @@ doc.autoTable({
     margin: { left: 30 },
     columnStyles: {
         0: { cellWidth: 50 }
+    },
+    bodyStyles: {
+        valign: 'top'
+    },
+    columnStyles: {
+        1: { cellWidth: 100, overflow: 'linebreak' }
     }
 });
 
+// Key Metrics section - New page
+doc.addPage();
+doc.setFontSize(16);
+doc.setTextColor(240, 109, 13);
+doc.text('Key Metrics', 20, 20);
+
+// Metrics as table
+doc.autoTable({
+    startY: 30,
+    head: [['Metric', 'Value']],
+    body: [
+        ['Project Cost', data.projectCost],
+        ['Maintenance & support', data.tco],
+        ['Risk Adjustment', assessment.riskAdjustment || '0%'],
+        ['Total Cost of Ownership (TCO)', formatCurrency(
+            parseCurrency(data.projectCost) + parseCurrency(data.tco)
+        )],
+        ['Return on Investment', data.roi],
+        ['Payback Period', data.paybackPeriod],
+        ['Net Benefit', data.netBenefit]
+    ],
+    theme: 'grid',
+    headStyles: { 
+        fillColor: [240, 109, 13],
+        textColor: [255, 255, 255]
+    },
+    margin: { left: 30 },
+    columnStyles: {
+        0: { cellWidth: 80 }  // Width for metric names
+    }
+});
+
+// Financial Overview section
+doc.text('5 Year Financial Overview', 20, doc.lastAutoTable.finalY + 20);
+
+// Financial overview table
+doc.autoTable({
+    startY: doc.lastAutoTable.finalY + 30,
+    head: [[
+        'Year',
+        'Costs',
+        'One-off Value',
+        'Recurring Value',
+        'Net Cash Flow',
+        'Accumulated Benefit'
+    ]],
+    body: financialData,
+    theme: 'grid',
+    headStyles: { 
+        fillColor: [240, 109, 13],
+        textColor: [255, 255, 255]
+    },
+    margin: { left: 20, right: 20 },
+    styles: {
+        fontSize: 8,
+        cellPadding: 2
+    }
+});
     // Cost Breakdown section - New page
     doc.addPage();
     doc.setFontSize(16);
@@ -696,68 +780,68 @@ doc.autoTable({
         });
     }
 
-// Technology Costs
-if (costs.techCosts) {
-    doc.text('Technology Costs', 20, doc.lastAutoTable.finalY + 20);
-    doc.autoTable({
-        startY: doc.lastAutoTable.finalY + 30,
-        head: [['Item', 'One-time Cost', 'Monthly Cost', 'Duration', 'Description', 'Total']],
-        body: costs.techCosts.map((tech, index) => [
-            index === 0 ? 'Licenses' :
-            index === 1 ? 'Infrastructure' :
-            index === 2 ? 'Cloud Services' :
-            index === 3 ? 'Tools' :
-            index === 4 ? 'Data Migration' :
-            index === 5 ? 'Application Maintenance' : 'Other',
-            formatCurrency(tech['tech-onetime'] || 0),
-            formatCurrency(tech['tech-monthly'] || 0),
-            `${tech['tech-duration'] || 0} months`,
-            tech.description || '',
-            formatCurrency((parseFloat(tech['tech-onetime'] || 0) + 
-                         (parseFloat(tech['tech-monthly'] || 0) * parseFloat(tech['tech-duration'] || 0))))
-        ]),
-        theme: 'grid',
-        headStyles: { fillColor: [240, 109, 13], textColor: [255, 255, 255] },
-        margin: { left: 20, right: 20 },
-        styles: { fontSize: 8 }
-    });
-}
+    // Technology Costs
+    if (costs.techCosts) {
+        doc.text('Technology Costs', 20, doc.lastAutoTable.finalY + 20);
+        doc.autoTable({
+            startY: doc.lastAutoTable.finalY + 30,
+            head: [['Item', 'One-time Cost', 'Monthly Cost', 'Duration', 'Description', 'Total']],
+            body: costs.techCosts.map((tech, index) => [
+                index === 0 ? 'Licenses' :
+                index === 1 ? 'Infrastructure' :
+                index === 2 ? 'Cloud Services' :
+                index === 3 ? 'Tools' :
+                index === 4 ? 'Data Migration' :
+                index === 5 ? 'Application Maintenance' : 'Other',
+                formatCurrency(tech['tech-onetime'] || 0),
+                formatCurrency(tech['tech-monthly'] || 0),
+                `${tech['tech-duration'] || 0} months`,
+                tech.description || '',
+                formatCurrency((parseFloat(tech['tech-onetime'] || 0) + 
+                             (parseFloat(tech['tech-monthly'] || 0) * parseFloat(tech['tech-duration'] || 0))))
+            ]),
+            theme: 'grid',
+            headStyles: { fillColor: [240, 109, 13], textColor: [255, 255, 255] },
+            margin: { left: 20, right: 20 },
+            styles: { fontSize: 8 }
+        });
+    }
 
-// External Costs
-if (costs.externalCosts) {
-    doc.text('External Costs', 20, doc.lastAutoTable.finalY + 20);
-    doc.autoTable({
-        startY: doc.lastAutoTable.finalY + 30,
-        head: [['Item', 'One-time Cost', 'Monthly Cost', 'Duration', 'Contingency', 'Description', 'Total']],
-        body: costs.externalCosts.map((ext, index) => {
-            const oneTime = parseFloat(ext['external-cost']) || 0;
-            const monthly = parseFloat(ext['external-monthly']) || 0;
-            const duration = parseFloat(ext['external-duration']) || 0;
-            const contingency = parseFloat(ext['external-contingency']) || 0;
+    // External Costs
+    if (costs.externalCosts) {
+        doc.text('External Costs', 20, doc.lastAutoTable.finalY + 20);
+        doc.autoTable({
+            startY: doc.lastAutoTable.finalY + 30,
+            head: [['Item', 'One-time Cost', 'Monthly Cost', 'Duration', 'Contingency', 'Description', 'Total']],
+            body: costs.externalCosts.map((ext, index) => {
+                const oneTime = parseFloat(ext['external-cost']) || 0;
+                const monthly = parseFloat(ext['external-monthly']) || 0;
+                const duration = parseFloat(ext['external-duration']) || 0;
+                const contingency = parseFloat(ext['external-contingency']) || 0;
 
-            // Calculate total with contingency
-            const monthlyTotal = monthly * duration;
-            const subtotal = oneTime + monthlyTotal;
-            const total = subtotal * (1 + contingency/100);
+                // Calculate total with contingency
+                const monthlyTotal = monthly * duration;
+                const subtotal = oneTime + monthlyTotal;
+                const total = subtotal * (1 + contingency/100);
 
-            return [
-                index === 0 ? 'Vendors' :
-                index === 1 ? 'Consultants' :
-                index === 2 ? 'Training & expenses' : 'Other',
-                formatCurrency(oneTime),
-                formatCurrency(monthly),
-                `${duration} months`,
-                `${contingency}%`,
-                ext.description || '',
-                formatCurrency(total)
-            ];
-        }),
-        theme: 'grid',
-        headStyles: { fillColor: [240, 109, 13], textColor: [255, 255, 255] },
-        margin: { left: 20, right: 20 },
-        styles: { fontSize: 8 }
-    });
-}
+                return [
+                    index === 0 ? 'Vendors' :
+                    index === 1 ? 'Consultants' :
+                    index === 2 ? 'Training & expenses' : 'Other',
+                    formatCurrency(oneTime),
+                    formatCurrency(monthly),
+                    `${duration} months`,
+                    `${contingency}%`,
+                    ext.description || '',
+                    formatCurrency(total)
+                ];
+            }),
+            theme: 'grid',
+            headStyles: { fillColor: [240, 109, 13], textColor: [255, 255, 255] },
+            margin: { left: 20, right: 20 },
+            styles: { fontSize: 8 }
+        });
+    }
 
     // Value Breakdown section - New page
     doc.addPage();
@@ -766,22 +850,22 @@ if (costs.externalCosts) {
     doc.text('Value Breakdown', 20, 20);
 
     // One-off Values
-if (values.oneOff) {
-    doc.autoTable({
-        startY: 30,
-        head: [['Category', 'Amount', 'Description']],
-        body: values.oneOff.map((item, index) => [
-            index === 0 ? 'Hardware savings' :
-            index === 1 ? 'Inventory reduction' :
-            index === 2 ? 'Asset sale' : 'Other one-off value',
-            formatCurrency(item.amount || 0),
-            item.description || ''
-        ]),
-        theme: 'grid',
-        headStyles: { fillColor: [240, 109, 13], textColor: [255, 255, 255] },
-        margin: { left: 20, right: 20 }
-    });
-}
+    if (values.oneOff) {
+        doc.autoTable({
+            startY: 30,
+            head: [['Category', 'Amount', 'Description']],
+            body: values.oneOff.map((item, index) => [
+                index === 0 ? 'Hardware savings' :
+                index === 1 ? 'Inventory reduction' :
+                index === 2 ? 'Asset sale' : 'Other one-off value',
+                formatCurrency(item.amount || 0),
+                item.description || ''
+            ]),
+            theme: 'grid',
+            headStyles: { fillColor: [240, 109, 13], textColor: [255, 255, 255] },
+            margin: { left: 20, right: 20 }
+        });
+    }
 
     // Recurring Values
     if (values.recurring) {
@@ -808,64 +892,7 @@ if (values.oneOff) {
         });
     }
     
-    // Key Metrics section - New page
-    doc.addPage();
-    doc.setFontSize(16);
-    doc.setTextColor(240, 109, 13);
-    doc.text('Key Metrics', 20, 20);
     
-    // Metrics as table
-    doc.autoTable({
-        startY: 30,
-        head: [['Metric', 'Value']],
-        body: [
-            ['Project Cost', data.projectCost],
-            ['Maintenance & support', data.tco],
-            ['Risk Adjustment', assessment.riskAdjustment || '0%'],
-            ['Total Cost of Ownership (TCO)', formatCurrency(
-                parseCurrency(data.projectCost) + parseCurrency(data.tco)
-            )],
-            ['Return on Investment', data.roi],
-            ['Payback Period', data.paybackPeriod],
-            ['Net Benefit', data.netBenefit]
-        ],
-        theme: 'grid',
-        headStyles: { 
-            fillColor: [240, 109, 13],
-            textColor: [255, 255, 255]
-        },
-        margin: { left: 30 },
-        columnStyles: {
-            0: { cellWidth: 80 }  // Width for metric names
-        }
-    });
-
-    // Financial Overview section
-    doc.text('5 Year Financial Overview', 20, doc.lastAutoTable.finalY + 20);
-
-    // Financial overview table
-    doc.autoTable({
-        startY: doc.lastAutoTable.finalY + 30,
-        head: [[
-            'Year',
-            'Costs',
-            'One-off Value',
-            'Recurring Value',
-            'Net Cash Flow',
-            'Accumulated Benefit'
-        ]],
-        body: financialData,
-        theme: 'grid',
-        headStyles: { 
-            fillColor: [240, 109, 13],
-            textColor: [255, 255, 255]
-        },
-        margin: { left: 20, right: 20 },
-        styles: {
-            fontSize: 8,
-            cellPadding: 2
-        }
-    });
 
     // Charts section - New page
     doc.addPage();
@@ -898,6 +925,7 @@ if (values.oneOff) {
 
 function loadProjectInfo() {
     const assessment = JSON.parse(localStorage.getItem('projectAssessment') || '{}');
+    const valueData = JSON.parse(localStorage.getItem('projectValue') || '{}');
 
     if (Object.keys(assessment).length === 0) {
         showNoAssessmentMessage();
@@ -914,6 +942,24 @@ function loadProjectInfo() {
     const riskElem = document.getElementById('summaryRiskAdjustment');
     if (riskElem && assessment.riskAdjustment) {
         riskElem.textContent = assessment.riskAdjustment;
+        
+        // Add override reason if available
+        if (assessment.isRiskOverridden && assessment.overrideReason) {
+            const reasonElem = document.createElement('div');
+            reasonElem.className = 'risk-override-reason';
+            reasonElem.innerHTML = `<strong>Override Reason:</strong> ${assessment.overrideReason}`;
+            riskElem.parentNode.appendChild(reasonElem);
+        }
+    }
+    
+    // Display value comments if available
+    const commentsDisplay = document.getElementById('valueCommentsDisplay');
+    if (commentsDisplay) {
+        if (valueData.comments && valueData.comments.trim()) {
+            commentsDisplay.innerHTML = `<p>${valueData.comments.replace(/\n/g, '<br>')}</p>`;
+        } else {
+            commentsDisplay.innerHTML = '<p class="no-comments">No value calculation comments provided.</p>';
+        }
     }
 }
 

@@ -104,7 +104,8 @@ function updateTotalProjectValue() {
 function saveValues() {
     const valueData = {
         oneOff: collectOneOffValues(),
-        recurring: collectRecurringValues()
+        recurring: collectRecurringValues(),
+        comments: document.getElementById('valueComments').value
     };
 
     localStorage.setItem('projectValue', JSON.stringify(valueData));
@@ -155,6 +156,9 @@ function loadSavedValues() {
             if (row) {
                 row.querySelector('.amount').value = item.amount || '';
                 row.querySelector('.description').value = item.description || '';
+            }
+            if (data.comments) {
+                document.getElementById('valueComments').value = data.comments;
             }
         });
         
