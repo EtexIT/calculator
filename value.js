@@ -145,37 +145,57 @@ function collectRecurringValues() {
     }));
 }
 
+// Fix for the undefined forEach error
 function loadSavedValues() {
     const saved = localStorage.getItem('projectValue');
     if (saved) {
-        const data = JSON.parse(saved);
+        const values = JSON.parse(saved);
         
-        // Restore one-off values
-        data.oneOff.forEach((item, index) => {
-            const row = document.querySelectorAll('#oneOffTable tbody tr')[index];
-            if (row) {
-                row.querySelector('.amount').value = item.amount || '';
-                row.querySelector('.description').value = item.description || '';
-            }
-            if (data.comments) {
-                document.getElementById('valueComments').value = data.comments;
-            }
-        });
+        // Check if oneOff array exists before trying to iterate
+        if (values.oneOff && Array.isArray(values.oneOff)) {
+            values.oneOff.forEach((item, index) => {
+                const row = document.querySelector(`#oneOffValuesTable tbody tr:nth-child(${index + 1})`);
+                if (row) {
+                    const amountInput = row.querySelector('.value-amount');
+                    const descInput = row.querySelector('.description');
+                    
+                    if (amountInput) amountInput.value = item.amount || '';
+                    if (descInput) descInput.value = item.description || '';
+                }
+            });
+        }
         
-        // Restore recurring values
-        data.recurring.forEach((item, index) => {
-            const row = document.querySelectorAll('#recurringTable tbody tr')[index];
-            if (row) {
-                row.querySelector('.year1').value = item.year1 || '';
-                row.querySelector('.year2').value = item.year2 || '';
-                row.querySelector('.year3').value = item.year3 || '';
-                row.querySelector('.year4').value = item.year4 || '';
-                row.querySelector('.year5').value = item.year5 || '';
-                row.querySelector('.description').value = item.description || '';
+        // Check if recurring array exists before trying to iterate
+        if (values.recurring && Array.isArray(values.recurring)) {
+            values.recurring.forEach((item, index) => {
+                const row = document.querySelector(`#recurringValuesTable tbody tr:nth-child(${index + 1})`);
+                if (row) {
+                    const year1Input = row.querySelector('.year1');
+                    const year2Input = row.querySelector('.year2');
+                    const year3Input = row.querySelector('.year3');
+                    const year4Input = row.querySelector('.year4');
+                    const year5Input = row.querySelector('.year5');
+                    const descInput = row.querySelector('.description');
+                    
+                    if (year1Input) year1Input.value = item.year1 || '';
+                    if (year2Input) year2Input.value = item.year2 || '';
+                    if (year3Input) year3Input.value = item.year3 || '';
+                    if (year4Input) year4Input.value = item.year4 || '';
+                    if (year5Input) year5Input.value = item.year5 || '';
+                    if (descInput) descInput.value = item.description || '';
+                }
+            });
+        }
+        
+        // Check if comments exist before trying to set them
+        if (values.comments) {
+            const commentsTextarea = document.getElementById('valueComments');
+            if (commentsTextarea) {
+                commentsTextarea.value = values.comments;
             }
-        });
-
-        // Recalculate totals
+        }
+        
+        // Recalculate all values
         calculateOneOffValues();
         calculateRecurringValues();
     }

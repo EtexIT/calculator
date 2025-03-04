@@ -1021,13 +1021,13 @@ function calculateProjectCostAndTCO() {
     const riskText = document.getElementById('summaryRiskAdjustment').textContent;
     const riskPercentage = parseFloat(riskText) || 0;
 
-    // Calculate Project Cost (similar to CAPEX)
-    const baseProjectCost = scopingCost + executionCost + oneTimeTechCosts + externalCosts;
+    // Calculate Project Cost (UPDATED: now includes validation phase)
+    const baseProjectCost = validationCost + scopingCost + executionCost + oneTimeTechCosts + externalCosts;
     const projectRiskAmount = baseProjectCost * (riskPercentage / 100);
     const totalProjectCost = baseProjectCost + projectRiskAmount;
 
-    // Calculate TCO (validation + recurring costs)
-    const baseTCO = validationCost + recurringTechCosts;
+    // Calculate TCO (UPDATED: now includes only recurring costs)
+    const baseTCO = recurringTechCosts;
     const tcoRiskAmount = baseTCO * (riskPercentage / 100);
     const totalTCO = baseTCO + tcoRiskAmount;
 
