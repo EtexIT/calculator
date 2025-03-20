@@ -100,6 +100,10 @@ function calculateScore() {
 function updateRecommendation(score) {
     let approach, riskAdjustment, pmoInvolvement;
 
+    // Don't update risk adjustment if override is active
+    const overrideCheckbox = document.getElementById('overrideRisk');
+    const isOverridden = overrideCheckbox && overrideCheckbox.checked;
+
     // Updated score ranges based on documentation
     if (score >= 21) {
         approach = "Full PMO management";
@@ -145,7 +149,11 @@ function updateRecommendation(score) {
 
     // Update the display
     document.getElementById('recommendedApproach').textContent = approach;
-    document.getElementById('riskAdjustment').textContent = riskAdjustment;
+    
+    // Only update risk adjustment if not overridden
+    if (!isOverridden) {
+        document.getElementById('riskAdjustment').textContent = riskAdjustment;
+    }
 
     // Update the involvement list
     const involvementList = document.getElementById('pmoInvolvement');
@@ -258,32 +266,36 @@ function loadSavedAssessment() {
                 }
             }
         }
-
-        // Check if risk is overridden and handle that case
-        if (assessment.isRiskOverridden) {
-            const overrideCheckbox = document.getElementById('overrideRisk');
-            const customRiskInput = document.getElementById('customRisk');
-            const overrideReason = document.getElementById('overrideReason');
-            const overrideInputs = document.querySelector('.override-inputs');
         
-            if (overrideCheckbox) {
-                overrideCheckbox.checked = true;
-                if (overrideInputs) {
-                    overrideInputs.style.display = 'block';
-                }
-                if (customRiskInput) {
-                    customRiskInput.disabled = false;
-                    customRiskInput.value = assessment.customRiskValue || '';
-                }
-                if (overrideReason) {
-                    overrideReason.disabled = false;
-                    overrideReason.value = assessment.overrideReason || '';
-                }
-            }
+        // Set up risk override UI state
+        const isOverridden = assessment.isRiskOverridden || false;
+        const overrideCheckbox = document.getElementById('overrideRisk');
+        const customRiskInput = document.getElementById('customRisk');
+        const overrideReason = document.getElementById('overrideReason');
+        const overrideInputs = document.querySelector('.override-inputs');
+        const riskAdjustmentDisplay = document.getElementById('riskAdjustment');
+        
+        if (overrideCheckbox) overrideCheckbox.checked = isOverridden;
+        if (overrideInputs) overrideInputs.style.display = isOverridden ? 'block' : 'none';
+        if (customRiskInput) {
+            customRiskInput.disabled = !isOverridden;
+            customRiskInput.value = assessment.customRiskValue || '';
         }
-
-        // Ensure recommendation display is updated
+        if (overrideReason) {
+            overrideReason.disabled = !isOverridden;
+            overrideReason.value = assessment.overrideReason || '';
+        }
+        
+        // Calculate score - but this won't override the risk adjustment now due to updateRecommendation change
         calculateScore();
+        
+        // Explicitly set the risk adjustment value after calculation
+        if (isOverridden && riskAdjustmentDisplay) {
+            riskAdjustmentDisplay.textContent = `${assessment.customRiskValue}%`;
+        } else if (riskAdjustmentDisplay) {
+            // If not overridden, make sure we have the stored value
+            riskAdjustmentDisplay.textContent = assessment.riskAdjustment || riskAdjustmentDisplay.textContent;
+        }
 
         console.log('Assessment loaded:', assessment); // For debugging
     } else {

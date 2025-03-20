@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Case Estimator</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-logo">
+                <img src="Logo.svg" alt="Etex Logo" width="309" height="73">
+            </div>
+            <div class="nav-links-left">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="assessment.html" class="nav-link">Project Assessment</a>
+                <a href="costs.html" class="nav-link">Costs</a>
+                <a href="distribution.html" class="nav-link active">Cost Distribution</a>
+                <a href="value.html" class="nav-link">Value</a>
+                <a href="business-case.html" class="nav-link">Business Case</a>
+            </div>
+            <div class="nav-links-right">
+                <a href="instructions.html" class="nav-link">Instructions</a>
+                <a href="formulas.html" class="nav-link">Formulas</a>
+            </div>
+        </nav>
+    </header>
+    <main class="content">
+        <div class="distribution-container">
+            <h1>Project Cost Distribution</h1>
+
+            <!-- Project Info Section -->
+            <section class="section project-summary">
+                <h2>Project Information</h2>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <label>Project Name:</label>
+                        <span id="summaryProjectName">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <label>Project Owner:</label>
+                        <span id="summaryProjectOwner">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <label>Division/Department:</label>
+                        <span id="summaryDepartment">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <label>Estimated By:</label>
+                        <span id="summaryEstimatedBy">-</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Cost Distribution Section -->
+            <section class="section distribution-section">
+                <h2>Cost Distribution Analysis</h2>
+                <p class="section-description">Manage how project costs are distributed across different cost types and time periods.</p>
+                
+                <!-- Project Costs Distribution Section -->
+                <div id="projectCostsSection">
+                    <div class="distribution-info">
+                        <h3>Project Cost Distribution</h3>
+                        <p>Total Project Cost: <strong id="totalProjectAmount">€0.00</strong></p>
+                        <p>Risk Adjustment: <span id="risk-adjustment-info">0%</span></p>
+                        <p>Distribute project costs across years.</p>
+                    </div>
+                    
+                    <div class="project-distribution-section">
+                        <h3>Distribution by Cost Type and Year</h3>
+                        
+                        <table class="distribution-table" id="projectDistributionTable">
+                            <thead>
+                                <tr>
+                                    <th>Cost Type</th>
+                                    <th>Available to Distribute</th>
+                                    <th>Current Year (2025)</th>
+                                    <th>2026</th>
+                                    <th>2027</th>
+                                    <th>2028</th>
+                                    <th>2029</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Team Costs (Execution)</td>
+                                    <td id="project-team-available" class="available-amount">€0.00</td>
+                                    <td><input type="number" class="year-input" data-type="project-team" data-year="2025"></td>
+                                    <td><input type="number" class="year-input" data-type="project-team" data-year="2026"></td>
+                                    <td><input type="number" class="year-input" data-type="project-team" data-year="2027"></td>
+                                    <td><input type="number" class="year-input" data-type="project-team" data-year="2028"></td>
+                                    <td><input type="number" class="year-input" data-type="project-team" data-year="2029"></td>
+                                    <td class="type-total" id="project-team-total">€0.00</td>
+                                </tr>
+                                <tr>
+                                    <td>Technology Costs (One-time)</td>
+                                    <td id="project-tech-available" class="available-amount">€0.00</td>
+                                    <td><input type="number" class="year-input" data-type="project-tech" data-year="2025"></td>
+                                    <td><input type="number" class="year-input" data-type="project-tech" data-year="2026"></td>
+                                    <td><input type="number" class="year-input" data-type="project-tech" data-year="2027"></td>
+                                    <td><input type="number" class="year-input" data-type="project-tech" data-year="2028"></td>
+                                    <td><input type="number" class="year-input" data-type="project-tech" data-year="2029"></td>
+                                    <td class="type-total" id="project-tech-total">€0.00</td>
+                                </tr>
+                                <tr>
+                                    <td>External Costs</td>
+                                    <td id="project-external-available" class="available-amount">€0.00</td>
+                                    <td><input type="number" class="year-input" data-type="project-external" data-year="2025"></td>
+                                    <td><input type="number" class="year-input" data-type="project-external" data-year="2026"></td>
+                                    <td><input type="number" class="year-input" data-type="project-external" data-year="2027"></td>
+                                    <td><input type="number" class="year-input" data-type="project-external" data-year="2028"></td>
+                                    <td><input type="number" class="year-input" data-type="project-external" data-year="2029"></td>
+                                    <td class="type-total" id="project-external-total">€0.00</td>
+                                </tr>
+                                <tr>
+                                    <td>Risk Adjustment</td>
+                                    <td id="project-risk-available" class="available-amount">€0.00</td>
+                                    <td><input type="number" class="year-input" data-type="project-risk" data-year="2025"></td>
+                                    <td><input type="number" class="year-input" data-type="project-risk" data-year="2026"></td>
+                                    <td><input type="number" class="year-input" data-type="project-risk" data-year="2027"></td>
+                                    <td><input type="number" class="year-input" data-type="project-risk" data-year="2028"></td>
+                                    <td><input type="number" class="year-input" data-type="project-risk" data-year="2029"></td>
+                                    <td class="type-total" id="project-risk-total">€0.00</td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td><strong>Year Total</strong></td>
+                                    <td id="project-total-available" class="available-amount">€0.00</td>
+                                    <td class="year-total" id="project-total-2025">€0.00</td>
+                                    <td class="year-total" id="project-total-2026">€0.00</td>
+                                    <td class="year-total" id="project-total-2027">€0.00</td>
+                                    <td class="year-total" id="project-total-2028">€0.00</td>
+                                    <td class="year-total" id="project-total-2029">€0.00</td>
+                                    <td class="grand-total" id="project-grand-total">€0.00</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        
+                        <div class="distribution-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Total Project Amount:</span>
+                                <span class="stat-value" id="total-project-display">€0.00</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Distributed Amount:</span>
+                                <span class="stat-value" id="project-distributed-amount">€0.00</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Remaining to Distribute:</span>
+                                <span class="stat-value" id="project-remaining-amount">€0.00</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">CAPEX/OPEX:</span>
+                                <span class="stat-value" id="capex-opex-ratio">€0/€0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Maintenance Costs Distribution Section -->
+                <div id="maintenanceCostsSection">
+                    <div class="distribution-info">
+                        <h3>Maintenance Cost Distribution</h3>
+                        <p>Total Maintenance Cost: <strong id="totalMaintenanceAmount">€0.00</strong></p>
+                        <p>Risk Adjustment: <span id="maintenance-risk-adjustment-info">0%</span></p>
+                        <p>Distribute maintenance costs across years.</p>
+                    </div>
+                    
+                    <div class="maintenance-distribution-section">
+                        <h3>Distribution by Cost Type and Year</h3>
+                        
+                        <table class="distribution-table" id="maintenanceDistributionTable">
+                            <thead>
+                                <tr>
+                                    <th>Cost Type</th>
+                                    <th>Available to Distribute</th>
+                                    <th>Current Year (2025)</th>
+                                    <th>2026</th>
+                                    <th>2027</th>
+                                    <th>2028</th>
+                                    <th>2029</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Recurring Technology Costs</td>
+                                    <td id="maintenance-tech-available" class="available-amount">€0.00</td>
+                                    <td><input type="number" class="year-input" data-type="maintenance-tech" data-year="2025"></td>
+                                    <td><input type="number" class="year-input" data-type="maintenance-tech" data-year="2026"></td>
+                                    <td><input type="number" class="year-input" data-type="maintenance-tech" data-year="2027"></td>
+                                    <td><input type="number" class="year-input" data-type="maintenance-tech" data-year="2028"></td>
+                                    <td><input type="number" class="year-input" data-type="maintenance-tech" data-year="2029"></td>
+                                    <td class="type-total" id="maintenance-tech-total">€0.00</td>
+                                </tr>
+                                <tr>
+                                    <td>Risk Adjustment</td>
+                                    <td id="maintenance-risk-available" class="available-amount">€0.00</td>
+                                    <td><input type="number" class="year-input" data-type="maintenance-risk" data-year="2025"></td>
+                                    <td><input type="number" class="year-input" data-type="maintenance-risk" data-year="2026"></td>
+                                    <td><input type="number" class="year-input" data-type="maintenance-risk" data-year="2027"></td>
+                                    <td><input type="number" class="year-input" data-type="maintenance-risk" data-year="2028"></td>
+                                    <td><input type="number" class="year-input" data-type="maintenance-risk" data-year="2029"></td>
+                                    <td class="type-total" id="maintenance-risk-total">€0.00</td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td><strong>Year Total</strong></td>
+                                    <td id="maintenance-total-available" class="available-amount">€0.00</td>
+                                    <td class="year-total" id="maintenance-total-2025">€0.00</td>
+                                    <td class="year-total" id="maintenance-total-2026">€0.00</td>
+                                    <td class="year-total" id="maintenance-total-2027">€0.00</td>
+                                    <td class="year-total" id="maintenance-total-2028">€0.00</td>
+                                    <td class="year-total" id="maintenance-total-2029">€0.00</td>
+                                    <td class="grand-total" id="maintenance-grand-total">€0.00</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        
+                        <div class="distribution-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Total Maintenance Amount:</span>
+                                <span class="stat-value" id="total-maintenance-display">€0.00</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Distributed Amount:</span>
+                                <span class="stat-value" id="maintenance-distributed-amount">€0.00</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Remaining to Distribute:</span>
+                                <span class="stat-value" id="maintenance-remaining-amount">€0.00</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Always OPEX</span>
+                                <span class="stat-value">100%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Summary Section -->
+            <section class="section summary-section">
+                <h2>Distribution Summary</h2>
+                <div class="summary-card">
+                    <h3>Project Cost Distribution</h3>
+                    <div class="distribution-row">
+                        <span>CAPEX/OPEX Split:</span>
+                        <span id="summary-capex-opex">€0 (0%) / €0 (0%)</span>
+                    </div>
+                    <div class="distribution-group">
+                        <h4>Year-by-Year Distribution</h4>
+                        <div class="distribution-years" id="project-years-summary">
+                            <!-- Year distributions will be added dynamically -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="summary-card">
+                    <h3>Maintenance Cost Distribution (OPEX)</h3>
+                    <div class="distribution-group">
+                        <h4>Year-by-Year Distribution</h4>
+                        <div class="distribution-years" id="maintenance-years-summary">
+                            <!-- Year distributions will be added dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button id="saveDistribution" class="btn-primary">Save</button>
+                <button id="resetDistribution" class="btn-secondary">Reset</button>
+                <button id="nextButton" class="btn-primary" disabled>Next Step</button>
+            </div>
+        </div>
+    </main>
+    <script src="distribution.js"></script>
+</body>
+</html>

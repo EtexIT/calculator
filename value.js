@@ -151,12 +151,13 @@ function loadSavedValues() {
     if (saved) {
         const values = JSON.parse(saved);
         
-        // Check if oneOff array exists before trying to iterate
+        // Load one-off values
         if (values.oneOff && Array.isArray(values.oneOff)) {
             values.oneOff.forEach((item, index) => {
-                const row = document.querySelector(`#oneOffValuesTable tbody tr:nth-child(${index + 1})`);
-                if (row) {
-                    const amountInput = row.querySelector('.value-amount');
+                const rows = document.querySelectorAll('#oneOffTable tbody tr');
+                if (index < rows.length) {
+                    const row = rows[index];
+                    const amountInput = row.querySelector('.amount');
                     const descInput = row.querySelector('.description');
                     
                     if (amountInput) amountInput.value = item.amount || '';
@@ -165,11 +166,12 @@ function loadSavedValues() {
             });
         }
         
-        // Check if recurring array exists before trying to iterate
+        // Load recurring values
         if (values.recurring && Array.isArray(values.recurring)) {
             values.recurring.forEach((item, index) => {
-                const row = document.querySelector(`#recurringValuesTable tbody tr:nth-child(${index + 1})`);
-                if (row) {
+                const rows = document.querySelectorAll('#recurringTable tbody tr');
+                if (index < rows.length) {
+                    const row = rows[index];
                     const year1Input = row.querySelector('.year1');
                     const year2Input = row.querySelector('.year2');
                     const year3Input = row.querySelector('.year3');
@@ -187,7 +189,7 @@ function loadSavedValues() {
             });
         }
         
-        // Check if comments exist before trying to set them
+        // Load comments
         if (values.comments) {
             const commentsTextarea = document.getElementById('valueComments');
             if (commentsTextarea) {
@@ -195,7 +197,7 @@ function loadSavedValues() {
             }
         }
         
-        // Recalculate all values
+        // Recalculate totals to update the display
         calculateOneOffValues();
         calculateRecurringValues();
     }

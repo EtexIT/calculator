@@ -567,6 +567,7 @@ function exportPDF() {
     const assessment = JSON.parse(localStorage.getItem('projectAssessment') || '{}');
     const costs = JSON.parse(localStorage.getItem('projectCosts') || '{}');
     const values = JSON.parse(localStorage.getItem('projectValue') || '{}');
+    const distribution = JSON.parse(localStorage.getItem('costDistribution') || '{}'); // Added this line to define distribution
 
     // Get financial overview data
     const financialTable = document.getElementById('financialOverview');
@@ -709,6 +710,8 @@ doc.autoTable({
     }
 });
 
+
+
 // Financial Overview section
 doc.text('5 Year Financial Overview', 20, doc.lastAutoTable.finalY + 20);
 
@@ -842,7 +845,109 @@ doc.autoTable({
             styles: { fontSize: 8 }
         });
     }
-
+// Add Cost Distribution section - NEW
+if (distribution && Object.keys(distribution).length > 0) {
+    doc.setFontSize(16);
+    doc.setTextColor(240, 109, 13);
+    doc.text('Cost Distribution', 20, doc.lastAutoTable.finalY + 20);
+    
+    // Prepare CAPEX/OPEX data
+    const isCapexProject = costs.isCapex || false;
+    const projectTotal = costs.summary?.totalProjectCost || 0;
+    
+    // Default OPEX ratio (for CAPEX projects)
+    let opexRatio = 0.05;  // 5% as default
+    
+    // Calculate CAPEX and OPEX amounts
+    let capexAmount = 0;
+    let opexAmount = 0;
+    
+    if (isCapexProject) {
+        capexAmount = projectTotal * (1 - opexRatio);
+        opexAmount = projectTotal * opexRatio;
+    } else {
+        opexAmount = projectTotal;
+    }
+    
+    // Calculate percentages
+    let capexPercent = 0;
+    let opexPercent = 0;
+    
+    if (projectTotal > 0) {
+        capexPercent = Math.round((capexAmount / projectTotal) * 100);
+        opexPercent = Math.round((opexAmount / projectTotal) * 100);
+    }
+    
+    // Create CAPEX/OPEX summary table
+    const capexOpexSummary = [
+        ['CAPEX/OPEX Split', `${capexPercent}% / ${opexPercent}%`],
+        ['CAPEX Amount', formatCurrency(capexAmount)],
+        ['OPEX Amount', formatCurrency(opexAmount)]
+    ];
+    
+    doc.autoTable({
+        startY: doc.lastAutoTable.finalY + 30,
+        head: [['Cost Classification', 'Value']],
+        body: capexOpexSummary,
+        theme: 'grid',
+        headStyles: { 
+            fillColor: [240, 109, 13],
+            textColor: [255, 255, 255]
+        },
+        margin: { left: 30 },
+        columnStyles: {
+            0: { cellWidth: 50 }
+        }
+    });
+    
+    // Add yearly distribution if available
+    if (distribution.projectDistribution && distribution.projectDistribution.values) {
+        // Prepare yearly distribution data
+        const yearlyData = [];
+        const years = ['2025', '2026', '2027', '2028', '2029'];
+        
+        years.forEach(year => {
+            // Use data from the distribution object if available
+            let yearAmount = 0;
+            
+            // Sum up all cost types for this year
+            const costTypes = ['project-team', 'project-tech', 'project-external', 'project-risk'];
+            costTypes.forEach(type => {
+                if (distribution.projectDistribution.values[type] && 
+                    distribution.projectDistribution.values[type][year]) {
+                    yearAmount += parseFloat(distribution.projectDistribution.values[type][year]) || 0;
+                }
+            });
+            
+            if (yearAmount > 0) {
+                // Calculate CAPEX and OPEX for this year
+                const yearCapexAmount = isCapexProject ? yearAmount * (1 - opexRatio) : 0;
+                const yearOpexAmount = isCapexProject ? yearAmount * opexRatio : yearAmount;
+                
+                yearlyData.push([
+                    year,
+                    formatCurrency(yearAmount),
+                    formatCurrency(yearCapexAmount),
+                    formatCurrency(yearOpexAmount)
+                ]);
+            }
+        });
+        
+        if (yearlyData.length > 0) {
+            doc.autoTable({
+                startY: doc.lastAutoTable.finalY + 10,
+                head: [['Year', 'Total', 'CAPEX', 'OPEX']],
+                body: yearlyData,
+                theme: 'grid',
+                headStyles: { 
+                    fillColor: [240, 109, 13],
+                    textColor: [255, 255, 255]
+                },
+                margin: { left: 30 }
+            });
+        }
+    }
+}
     // Value Breakdown section - New page
     doc.addPage();
     doc.setFontSize(16);

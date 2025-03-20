@@ -14,6 +14,7 @@ function exportProjectData() {
             assessment: JSON.parse(localStorage.getItem('projectAssessment') || '{}'),
             costs: JSON.parse(localStorage.getItem('projectCosts') || '{}'),
             value: JSON.parse(localStorage.getItem('projectValue') || '{}'),
+            distribution: JSON.parse(localStorage.getItem('costDistribution') || '{}'), // Added distribution data
             exportDate: new Date().toISOString(),
             version: '1.0'
         };
@@ -74,6 +75,7 @@ function importProjectData(event) {
             if (projectData.assessment) localStorage.setItem('projectAssessment', JSON.stringify(projectData.assessment));
             if (projectData.costs) localStorage.setItem('projectCosts', JSON.stringify(projectData.costs));
             if (projectData.value) localStorage.setItem('projectValue', JSON.stringify(projectData.value));
+            if (projectData.distribution) localStorage.setItem('costDistribution', JSON.stringify(projectData.distribution)); // Added distribution data
 
             showStatus('Project imported successfully! Refreshing page...', 'success');
             

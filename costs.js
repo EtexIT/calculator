@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Enable next button if costs are saved
     if (nextButton) {
         nextButton.disabled = !localStorage.getItem('projectCosts');
-        nextButton.onclick = () => window.location.href = 'value.html';
+        nextButton.onclick = () => window.location.href = 'distribution.html';
     }
 
     // Setup CAPEX handling
@@ -337,7 +337,7 @@ function saveCosts() {
     }, 2000);
 
     // Add click handler for next button
-    nextButton.onclick = () => window.location.href = 'value.html';
+    nextButton.onclick = () => window.location.href = 'distribution.html';
 }
 
 function loadSavedCosts() {
