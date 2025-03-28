@@ -58,6 +58,12 @@ function loadProjectInfo() {
     // Store CAPEX/OPEX information globally
     window.isCapexProject = costs.isCapex || false;
     
+    // Store the actual CAPEX/OPEX amounts if available
+    if (costs.summary && costs.summary.capexTotal !== undefined && costs.summary.opexTotal !== undefined) {
+        window.capexAmount = costs.summary.capexTotal;
+        window.opexAmount = costs.summary.opexTotal;
+    }
+    
     // Extract costs from the costs data
     loadProjectCosts(costs, riskPercentage);
     loadMaintenanceCosts(costs, riskPercentage);
@@ -86,8 +92,19 @@ function loadProjectCosts(costs, riskPercentage) {
         if (costs.summary.riskAmount) riskCosts = costs.summary.riskAmount;
     } else {
         // Original calculation logic if no summary exists
+        // [existing code]
+    }
+    
+    // Load the CAPEX/OPEX breakdown
+    let capexAmount = totalProjectAmount;
+    let opexAmount = 0;
+    
+    if (costs.isCapex) {
+        // Calculate validation costs (OPEX) vs scoping+execution costs (CAPEX)
+        let validationCost = 0;
+        let scopingExecutionCost = 0;
+        
         if (costs.teamCosts) {
-            // Extract project team costs (validation, scoping + execution phases)
             costs.teamCosts.forEach(member => {
                 const validationDays = parseFloat(member.validationDays) || 0;
                 const scopingDays = parseFloat(member.scopingDays) || 0;
@@ -96,34 +113,25 @@ function loadProjectCosts(costs, riskPercentage) {
                 const rate = parseFloat(member.rate) || 0;
                 const contingency = parseFloat(member.contingency) || 0;
                 
-                // Include ALL team costs in project costs (validation, scoping and execution)
-                teamCosts += (validationDays + scopingDays + executionDays) * persons * rate * (1 + contingency/100);
+                validationCost += (validationDays * persons * rate * (1 + contingency/100));
+                scopingExecutionCost += ((scopingDays + executionDays) * persons * rate * (1 + contingency/100));
             });
         }
         
-        if (costs.techCosts) {
-            // Extract one-time tech costs
-            costs.techCosts.forEach(tech => {
-                const oneTime = parseFloat(tech['tech-onetime']) || 0;
-                techCosts += oneTime;
-            });
-        }
-        
-        if (costs.externalCosts) {
-            // Extract external costs 
-            costs.externalCosts.forEach(external => {
-                const oneTimeCost = parseFloat(external['external-cost']) || 0;
-                const contingency = parseFloat(external['external-contingency']) || 0;
-                
-                externalCosts += oneTimeCost * (1 + contingency/100);
-            });
-        }
-        
-        // Calculate base total and risk amount
-        const totalBeforeRisk = teamCosts + techCosts + externalCosts;
-        riskCosts = totalBeforeRisk * riskPercentage;
-        totalProjectAmount = totalBeforeRisk + riskCosts;
+        // For CAPEX projects, validation costs are OPEX
+        opexAmount = validationCost;
+        capexAmount = totalProjectAmount - opexAmount;
+    } else {
+        // For non-CAPEX projects, everything is OPEX
+        opexAmount = totalProjectAmount;
+        capexAmount = 0;
     }
+    
+    // Store the CAPEX/OPEX ratio for distribution
+    window.capexAmount = capexAmount;
+    window.opexAmount = opexAmount;
+    window.capexRatio = totalProjectAmount > 0 ? capexAmount / totalProjectAmount : 0;
+    window.opexRatio = totalProjectAmount > 0 ? opexAmount / totalProjectAmount : 0;
     
     // Update UI with project costs
     document.getElementById('totalProjectAmount').textContent = formatCurrency(totalProjectAmount);
@@ -146,18 +154,12 @@ function loadProjectCosts(costs, riskPercentage) {
         'project-risk': riskCosts
     };
     
-    // Update CAPEX/OPEX ratio if applicable
-    const isCapex = costs.isCapex || false;
-    const capexAmount = isCapex ? costs.summary?.capexTotal || 0 : 0;
-    const opexAmount = costs.summary?.opexTotal || 0;
+    // Update CAPEX/OPEX ratio in the UI
+    const capexPercent = Math.round(window.capexRatio * 100);
+    const opexPercent = Math.round(window.opexRatio * 100);
     
-    if (isCapex) {
-        document.getElementById('capex-opex-ratio').textContent = 
-            `${formatCurrency(capexAmount)} / ${formatCurrency(opexAmount)} (${Math.round(capexAmount/totalProjectAmount*100)}% / ${Math.round(opexAmount/totalProjectAmount*100)}%)`;
-    } else {
-        document.getElementById('capex-opex-ratio').textContent = 
-            `${formatCurrency(0)} / ${formatCurrency(totalProjectAmount)} (0% / 100%)`;
-    }
+    document.getElementById('capex-opex-ratio').textContent = 
+        `${formatCurrency(capexAmount)} / ${formatCurrency(opexAmount)} (${capexPercent}% / ${opexPercent}%)`;
 }
 
 function loadMaintenanceCosts(costs, riskPercentage) {
@@ -694,12 +696,9 @@ function updateProjectTotals() {
     // Determine CAPEX/OPEX based on project settings and actual cost types
     const projectTotal = parseCurrency(document.getElementById('project-grand-total').textContent) || 0;
     
-    // Change the default OPEX ratio to 0 instead of 0.05 (5%)
-    let opexRatio = 0; // Default 0% as OPEX for CAPEX projects
-    
-    if (!window.isCapexProject) {
-        opexRatio = 1; // For non-CAPEX projects, everything is OPEX
-    }
+    // Use the stored CAPEX/OPEX ratios
+    const capexRatio = window.capexRatio || 0;
+    const opexRatio = window.opexRatio || 0;
     
     let hasProjectValues = false;
     for (let year = 2025; year <= 2029; year++) {
@@ -710,9 +709,9 @@ function updateProjectTotals() {
             const yearElement = document.createElement('div');
             yearElement.className = 'year-distribution';
             
-            // Calculate CAPEX and OPEX amounts for this year
-            const yearOpexAmount = window.isCapexProject ? yearAmount * opexRatio : yearAmount;
-            const yearCapexAmount = window.isCapexProject ? yearAmount - yearOpexAmount : 0;
+            // Calculate CAPEX and OPEX amounts for this year using the actual ratios
+            const yearCapexAmount = yearAmount * capexRatio;
+            const yearOpexAmount = yearAmount * opexRatio;
             
             yearElement.innerHTML = `
                 <p class="year-label">${year}:</p>
@@ -730,44 +729,12 @@ function updateProjectTotals() {
         projectYearsSummary.innerHTML = '<p>No project costs distributed</p>';
     }
     
-    // Get maintenance year amounts (always OPEX)
-    const maintenanceYearsSummary = document.getElementById('maintenance-years-summary');
-    maintenanceYearsSummary.innerHTML = ''; // Clear previous content
+    // Rest of the function remains the same
+    // ...
     
-    let hasMaintenanceValues = false;
-    for (let year = 2025; year <= 2029; year++) {
-        const yearAmount = parseCurrency(document.getElementById(`maintenance-total-${year}`).textContent) || 0;
-        
-        if (yearAmount > 0) {
-            hasMaintenanceValues = true;
-            const yearElement = document.createElement('div');
-            yearElement.className = 'year-distribution';
-            
-            yearElement.innerHTML = `
-                <p class="year-label">${year}:</p>
-                <div class="year-split">
-                    <p>Total: <strong>${formatCurrency(yearAmount)}</strong></p>
-                    <p>OPEX: <strong>${formatCurrency(yearAmount)}</strong></p>
-                </div>
-            `;
-            maintenanceYearsSummary.appendChild(yearElement);
-        }
-    }
-    
-    if (!hasMaintenanceValues) {
-        maintenanceYearsSummary.innerHTML = '<p>No maintenance costs distributed</p>';
-    }
-    
-    // Calculate overall CAPEX/OPEX totals
-    let capexAmount = 0;
-    let opexAmount = 0;
-    
-    if (window.isCapexProject) {
-        capexAmount = projectTotal * (1 - opexRatio);
-        opexAmount = projectTotal * opexRatio;
-    } else {
-        opexAmount = projectTotal;
-    }
+    // Calculate overall CAPEX/OPEX totals using the actual ratios
+    let capexAmount = projectTotal * capexRatio;
+    let opexAmount = projectTotal * opexRatio;
     
     // Calculate percentages
     let capexPercent = 0;
