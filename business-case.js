@@ -856,7 +856,7 @@ if (distribution && Object.keys(distribution).length > 0) {
     const projectTotal = costs.summary?.totalProjectCost || 0;
     
     // Default OPEX ratio (for CAPEX projects)
-    let opexRatio = 0.05;  // 5% as default
+    let opexRatio = 0;  // 0% as default for CAPEX projects
     
     // Calculate CAPEX and OPEX amounts
     let capexAmount = 0;

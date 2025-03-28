@@ -74,43 +74,56 @@ function loadProjectCosts(costs, riskPercentage) {
     let riskCosts = 0;
     let totalProjectAmount = 0;
     
-    if (costs.teamCosts) {
-        // Extract project team costs (validation, scoping + execution phases)
-        costs.teamCosts.forEach(member => {
-            const validationDays = parseFloat(member.validationDays) || 0;
-            const scopingDays = parseFloat(member.scopingDays) || 0;
-            const executionDays = parseFloat(member.executionDays) || 0;
-            const persons = parseFloat(member.persons) || 0;
-            const rate = parseFloat(member.rate) || 0;
-            const contingency = parseFloat(member.contingency) || 0;
-            
-            // Include ALL team costs in project costs (validation, scoping and execution)
-            teamCosts += (validationDays + scopingDays + executionDays) * persons * rate * (1 + contingency/100);
-        });
+    // If we have a summary with total project cost, use that directly
+    if (costs.summary && costs.summary.totalProjectCost) {
+        totalProjectAmount = costs.summary.totalProjectCost;
+        
+        // Calculate team, tech, external, and risk costs proportionally
+        // if they exist in the summary
+        if (costs.summary.teamCosts) teamCosts = costs.summary.teamCosts;
+        if (costs.summary.techCosts) techCosts = costs.summary.techCosts; 
+        if (costs.summary.externalCosts) externalCosts = costs.summary.externalCosts;
+        if (costs.summary.riskAmount) riskCosts = costs.summary.riskAmount;
+    } else {
+        // Original calculation logic if no summary exists
+        if (costs.teamCosts) {
+            // Extract project team costs (validation, scoping + execution phases)
+            costs.teamCosts.forEach(member => {
+                const validationDays = parseFloat(member.validationDays) || 0;
+                const scopingDays = parseFloat(member.scopingDays) || 0;
+                const executionDays = parseFloat(member.executionDays) || 0;
+                const persons = parseFloat(member.persons) || 0;
+                const rate = parseFloat(member.rate) || 0;
+                const contingency = parseFloat(member.contingency) || 0;
+                
+                // Include ALL team costs in project costs (validation, scoping and execution)
+                teamCosts += (validationDays + scopingDays + executionDays) * persons * rate * (1 + contingency/100);
+            });
+        }
+        
+        if (costs.techCosts) {
+            // Extract one-time tech costs
+            costs.techCosts.forEach(tech => {
+                const oneTime = parseFloat(tech['tech-onetime']) || 0;
+                techCosts += oneTime;
+            });
+        }
+        
+        if (costs.externalCosts) {
+            // Extract external costs 
+            costs.externalCosts.forEach(external => {
+                const oneTimeCost = parseFloat(external['external-cost']) || 0;
+                const contingency = parseFloat(external['external-contingency']) || 0;
+                
+                externalCosts += oneTimeCost * (1 + contingency/100);
+            });
+        }
+        
+        // Calculate base total and risk amount
+        const totalBeforeRisk = teamCosts + techCosts + externalCosts;
+        riskCosts = totalBeforeRisk * riskPercentage;
+        totalProjectAmount = totalBeforeRisk + riskCosts;
     }
-    
-    if (costs.techCosts) {
-        // Extract one-time tech costs
-        costs.techCosts.forEach(tech => {
-            const oneTime = parseFloat(tech['tech-onetime']) || 0;
-            techCosts += oneTime;
-        });
-    }
-    
-    if (costs.externalCosts) {
-        // Extract external costs 
-        costs.externalCosts.forEach(external => {
-            const oneTimeCost = parseFloat(external['external-cost']) || 0;
-            const contingency = parseFloat(external['external-contingency']) || 0;
-            
-            externalCosts += oneTimeCost * (1 + contingency/100);
-        });
-    }
-    
-    // Calculate base total and risk amount
-    const totalBeforeRisk = teamCosts + techCosts + externalCosts;
-    riskCosts = totalBeforeRisk * riskPercentage;
-    totalProjectAmount = totalBeforeRisk + riskCosts;
     
     // Update UI with project costs
     document.getElementById('totalProjectAmount').textContent = formatCurrency(totalProjectAmount);
@@ -153,28 +166,29 @@ function loadMaintenanceCosts(costs, riskPercentage) {
     let riskCosts = 0;
     let totalMaintenanceAmount = 0;
     
-    if (costs.techCosts) {
-        // Extract recurring tech costs only
-        costs.techCosts.forEach(tech => {
-            const monthly = parseFloat(tech['tech-monthly']) || 0;
-            const duration = parseFloat(tech['tech-duration']) || 0;
-            
-            recurringTechCosts += monthly * duration;
-        });
-    }
-    
-    // Calculate base total and risk amount
-    const totalBeforeRisk = recurringTechCosts;
-    riskCosts = totalBeforeRisk * riskPercentage;
-    totalMaintenanceAmount = totalBeforeRisk + riskCosts;
-    
-    // If summary has a specific maintenance cost, use that instead
-    if (costs.summary && costs.summary.totalMaintenanceCost) {
+    // If summary has a specific maintenance cost, use that directly
+    if (costs.summary && costs.summary.totalMaintenanceCost !== undefined) {
         totalMaintenanceAmount = costs.summary.totalMaintenanceCost;
         
         // Recalculate the components based on the total
         recurringTechCosts = totalMaintenanceAmount / (1 + riskPercentage);
         riskCosts = totalMaintenanceAmount - recurringTechCosts;
+    } else {
+        // Original calculation logic
+        if (costs.techCosts) {
+            // Extract recurring tech costs only
+            costs.techCosts.forEach(tech => {
+                const monthly = parseFloat(tech['tech-monthly']) || 0;
+                const duration = parseFloat(tech['tech-duration']) || 0;
+                
+                recurringTechCosts += monthly * duration;
+            });
+        }
+        
+        // Calculate base total and risk amount
+        const totalBeforeRisk = recurringTechCosts;
+        riskCosts = totalBeforeRisk * riskPercentage;
+        totalMaintenanceAmount = totalBeforeRisk + riskCosts;
     }
     
     // Update UI with maintenance costs
@@ -680,7 +694,8 @@ function updateProjectTotals() {
     // Determine CAPEX/OPEX based on project settings and actual cost types
     const projectTotal = parseCurrency(document.getElementById('project-grand-total').textContent) || 0;
     
-    let opexRatio = 0.05; // Default 5% as OPEX for CAPEX projects
+    // Change the default OPEX ratio to 0 instead of 0.05 (5%)
+    let opexRatio = 0; // Default 0% as OPEX for CAPEX projects
     
     if (!window.isCapexProject) {
         opexRatio = 1; // For non-CAPEX projects, everything is OPEX
