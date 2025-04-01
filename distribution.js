@@ -84,15 +84,42 @@ function loadProjectCosts(costs, riskPercentage) {
     if (costs.summary && costs.summary.totalProjectCost) {
         totalProjectAmount = costs.summary.totalProjectCost;
         
-        // Calculate team, tech, external, and risk costs proportionally
-        // if they exist in the summary
-        if (costs.summary.teamCosts) teamCosts = costs.summary.teamCosts;
-        if (costs.summary.techCosts) techCosts = costs.summary.techCosts; 
-        if (costs.summary.externalCosts) externalCosts = costs.summary.externalCosts;
-        if (costs.summary.riskAmount) riskCosts = costs.summary.riskAmount;
-    } else {
-        // Original calculation logic if no summary exists
-        // [existing code]
+        // Calculate proper breakdowns using the actual figures from costs data
+        if (costs.teamCosts) {
+            teamCosts = 0;
+            costs.teamCosts.forEach(member => {
+                const scopingDays = parseFloat(member.scopingDays) || 0;
+                const executionDays = parseFloat(member.executionDays) || 0;
+                const persons = parseFloat(member.persons) || 0;
+                const rate = parseFloat(member.rate) || 0;
+                const contingency = parseFloat(member.contingency) || 0;
+                
+                teamCosts += ((scopingDays + executionDays) * persons * rate) * (1 + contingency/100);
+            });
+        }
+        
+        // Calculate one-time tech costs
+        if (costs.techCosts) {
+            techCosts = 0;
+            costs.techCosts.forEach(tech => {
+                const oneTime = parseFloat(tech['tech-onetime']) || 0;
+                techCosts += oneTime;
+            });
+        }
+        
+        // Calculate external costs
+        if (costs.externalCosts) {
+            externalCosts = 0;
+            costs.externalCosts.forEach(external => {
+                const oneTime = parseFloat(external['external-cost']) || 0;
+                const contingency = parseFloat(external['external-contingency']) || 0;
+                externalCosts += oneTime * (1 + contingency/100);
+            });
+        }
+        
+        // Calculate risk adjustment
+        const baseTotal = teamCosts + techCosts + externalCosts;
+        riskCosts = totalProjectAmount - baseTotal;
     }
     
     // Load the CAPEX/OPEX breakdown
@@ -729,8 +756,33 @@ function updateProjectTotals() {
         projectYearsSummary.innerHTML = '<p>No project costs distributed</p>';
     }
     
-    // Rest of the function remains the same
-    // ...
+    // Now add the maintenance year summary
+    const maintenanceYearsSummary = document.getElementById('maintenance-years-summary');
+    maintenanceYearsSummary.innerHTML = ''; // Clear previous content
+    
+    let hasMaintenanceValues = false;
+    for (let year = 2025; year <= 2029; year++) {
+        const yearAmount = parseCurrency(document.getElementById(`maintenance-total-${year}`).textContent) || 0;
+        
+        if (yearAmount > 0) {
+            hasMaintenanceValues = true;
+            const yearElement = document.createElement('div');
+            yearElement.className = 'year-distribution';
+            
+            yearElement.innerHTML = `
+                <p class="year-label">${year}:</p>
+                <div class="year-split">
+                    <p>Total: <strong>${formatCurrency(yearAmount)}</strong></p>
+                    <p>OPEX: <strong>${formatCurrency(yearAmount)}</strong></p>
+                </div>
+            `;
+            maintenanceYearsSummary.appendChild(yearElement);
+        }
+    }
+    
+    if (!hasMaintenanceValues) {
+        maintenanceYearsSummary.innerHTML = '<p>No maintenance costs distributed</p>';
+    }
     
     // Calculate overall CAPEX/OPEX totals using the actual ratios
     let capexAmount = projectTotal * capexRatio;
