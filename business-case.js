@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('saveBusinessCase').addEventListener('click', saveBusinessCase);
     document.getElementById('resetBusinessCase').addEventListener('click', resetBusinessCase);
     document.getElementById('exportPDF').addEventListener('click', exportPDF);
+    document.getElementById('exportJSON').addEventListener('click', exportProjectData);
 });
 
 function loadFinancialData() {
