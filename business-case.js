@@ -126,65 +126,95 @@ function processYearlyData(costs, values) {
         accumulated: 0
     }));
 
-    // Process costs
-    // Team costs
-    if (costs.teamCosts) {
-        // Total team costs from localStorage
-        const totalTeamCosts = costs.teamCosts.reduce((sum, member) => {
-            const daysTotal = (parseFloat(member.validationDays) || 0) +
-                            (parseFloat(member.scopingDays) || 0) +
-                            (parseFloat(member.executionDays) || 0);
-            const persons = parseFloat(member.persons) || 0;
-            const rate = parseFloat(member.rate) || 0;
-            const contingency = (parseFloat(member.contingency) || 0) / 100;
-            
-            return sum + (daysTotal * persons * rate * (1 + contingency));
-        }, 0);
+    // Load cost distribution data if available
+    const distribution = JSON.parse(localStorage.getItem('costDistribution') || '{}');
+    
+    if (distribution.projectDistribution && distribution.projectDistribution.values) {
+        // Use actual cost distribution data for project costs
+        const projectDist = distribution.projectDistribution.values;
+        const years = ['2025', '2026', '2027', '2028', '2029'];
         
-        // Add to first year costs
-        yearlyData[0].costs += totalTeamCosts;
-    }
-
-    // Technology costs
-    if (costs.techCosts) {
-        costs.techCosts.forEach(tech => {
-            // One-time tech costs
-            const oneTime = parseFloat(tech['tech-onetime']) || 0;
-            yearlyData[0].costs += oneTime;
-            
-            // Monthly tech costs
-            const monthly = parseFloat(tech['tech-monthly']) || 0;
-            const duration = parseFloat(tech['tech-duration']) || 0;
-            
-            // Distribute monthly costs across years
-            for (let i = 0; i < Math.min(duration/12, 5); i++) {
-                yearlyData[i].costs += monthly * 12;
-            }
+        years.forEach((year, index) => {
+            // Sum all project cost types for this year
+            const costTypes = ['project-team', 'project-tech', 'project-external', 'project-risk'];
+            costTypes.forEach(type => {
+                if (projectDist[type] && projectDist[type][year]) {
+                    yearlyData[index].costs += parseFloat(projectDist[type][year]) || 0;
+                }
+            });
         });
+    } else {
+        // Fallback to old calculation method if no distribution data
+        // Team costs - add to first year
+        if (costs.teamCosts) {
+            const totalTeamCosts = costs.teamCosts.reduce((sum, member) => {
+                const daysTotal = (parseFloat(member.validationDays) || 0) +
+                                (parseFloat(member.scopingDays) || 0) +
+                                (parseFloat(member.executionDays) || 0);
+                const persons = parseFloat(member.persons) || 0;
+                const rate = parseFloat(member.rate) || 0;
+                const contingency = (parseFloat(member.contingency) || 0) / 100;
+                
+                return sum + (daysTotal * persons * rate * (1 + contingency));
+            }, 0);
+            
+            yearlyData[0].costs += totalTeamCosts;
+        }
+
+        // Technology costs - one-time to first year, recurring distributed
+        if (costs.techCosts) {
+            costs.techCosts.forEach(tech => {
+                const oneTime = parseFloat(tech['tech-onetime']) || 0;
+                yearlyData[0].costs += oneTime;
+                
+                const monthly = parseFloat(tech['tech-monthly']) || 0;
+                const duration = parseFloat(tech['tech-duration']) || 0;
+                
+                for (let i = 0; i < Math.min(duration/12, 5); i++) {
+                    yearlyData[i].costs += monthly * 12;
+                }
+            });
+        }
+
+        // External costs - add to first year
+        if (costs.externalCosts) {
+            costs.externalCosts.forEach(external => {
+                const oneTimeCost = parseFloat(external['external-cost']) || 0;
+                const contingency = (parseFloat(external['external-contingency']) || 0) / 100;
+                yearlyData[0].costs += oneTimeCost * (1 + contingency);
+            });
+        }
     }
 
-    // External costs - Fix here to handle one-time and monthly costs
-    if (costs.externalCosts) {
-        costs.externalCosts.forEach(external => {
-            // One-time external costs
-            const oneTimeCost = parseFloat(external['external-cost']) || 0;
-            const contingency = (parseFloat(external['external-contingency']) || 0) / 100;
-            
-            // Add one-time costs to first year
-            yearlyData[0].costs += oneTimeCost * (1 + contingency);
-            
-            // Monthly external costs
-            const monthly = parseFloat(external['external-monthly']) || 0;
-            const duration = parseFloat(external['external-duration']) || 0;
-            
-            // Distribute monthly costs across years with contingency
-            for (let i = 0; i < Math.min(duration/12, 5); i++) {
-                yearlyData[i].costs += monthly * 12 * (1 + contingency);
-            }
+    // Add maintenance costs from distribution if available
+    if (distribution.maintenanceDistribution && distribution.maintenanceDistribution.values) {
+        const maintenanceDist = distribution.maintenanceDistribution.values;
+        const years = ['2025', '2026', '2027', '2028', '2029'];
+        
+        years.forEach((year, index) => {
+            // Sum all maintenance cost types for this year
+            const costTypes = ['maintenance-tech', 'maintenance-risk'];
+            costTypes.forEach(type => {
+                if (maintenanceDist[type] && maintenanceDist[type][year]) {
+                    yearlyData[index].costs += parseFloat(maintenanceDist[type][year]) || 0;
+                }
+            });
         });
+    } else {
+        // Fallback: add recurring tech costs if no distribution
+        if (costs.techCosts) {
+            costs.techCosts.forEach(tech => {
+                const monthly = parseFloat(tech['tech-monthly']) || 0;
+                const duration = parseFloat(tech['tech-duration']) || 0;
+                
+                for (let i = 0; i < Math.min(duration/12, 5); i++) {
+                    yearlyData[i].costs += monthly * 12;
+                }
+            });
+        }
     }
 
-    // Process values
+    // Process values (unchanged)
     if (values.oneOff) {
         const oneOffTotal = values.oneOff.reduce((sum, item) => {
             return sum + (parseFloat(item.amount) || 0);
@@ -200,15 +230,6 @@ function processYearlyData(costs, values) {
         });
     }
 
-    // Apply risk adjustment from assessment if available
-    const assessment = JSON.parse(localStorage.getItem('projectAssessment') || '{}');
-    if (assessment.riskAdjustment) {
-        const riskPercentage = parseFloat(assessment.riskAdjustment.replace('%', '')) / 100 || 0;
-        yearlyData.forEach(year => {
-            year.costs *= (1 + riskPercentage);
-        });
-    }
-
     // Calculate net flow and accumulated values
     let accumulated = 0;
     yearlyData.forEach((year, index) => {
@@ -218,21 +239,6 @@ function processYearlyData(costs, values) {
     });
 
     return yearlyData;
-
-    // Value Comments section
-if (values.comments && values.comments.trim()) {
-    doc.text('Value Calculation Notes', 20, doc.lastAutoTable.finalY + 20);
-    doc.setFontSize(10);
-    doc.setTextColor(80);
-    
-    // Split comments into lines to ensure proper text wrapping
-    const splitComments = doc.splitTextToSize(values.comments, 170);
-    doc.text(splitComments, 20, doc.lastAutoTable.finalY + 35);
-    
-    // Reset font size and color
-    doc.setFontSize(16);
-    doc.setTextColor(240, 109, 13);
-}
 }
 
 function updateFinancialTable(yearlyData) {
