@@ -633,57 +633,139 @@ function exportPDF() {
     });
     
     // Assessment Outcome section
-    doc.setFontSize(16);
+doc.setFontSize(16);
 doc.setTextColor(240, 109, 13);
 doc.text('Assessment Outcome', 20, doc.lastAutoTable.finalY + 20);
 
-// Build the assessment table body with all relevant information
-let assessmentBody = [
-    ['Total Score', assessment.totalScore]
-];
+let currentY = doc.lastAutoTable.finalY + 40;
 
-// Add risk adjustment info with override explanation if applicable
-if (assessment.isRiskOverridden) {
-    // If risk was overridden, show that info
-    assessmentBody.push(['Risk Adjustment', `${assessment.riskAdjustment} (Overridden)`]);
+// Aggressive text cleaning function
+function aggressiveCleanText(text) {
+    if (!text) return '';
     
-    // Add override reason right after risk adjustment
+    return text.toString()
+        // Replace all types of quotes and apostrophes
+        .replace(/[""''`´]/g, "'")
+        // Replace all types of dashes
+        .replace(/[–—−]/g, "-")
+        // Replace special spaces
+        .replace(/[\u00A0\u2000-\u200B\u2028\u2029]/g, " ")
+        // Replace any remaining problematic Unicode characters
+        .replace(/[^\x00-\x7F]/g, "")
+        // Clean up multiple spaces
+        .replace(/\s+/g, " ")
+        // Remove any remaining control characters
+        .replace(/[\x00-\x1F\x7F]/g, "")
+        .trim();
+}
+
+// Helper function to wrap text at word boundaries with fixed character limits
+function wrapText(text, maxCharsPerLine = 50) {
+    const cleanText = aggressiveCleanText(text);
+    const words = cleanText.split(' ');
+    const lines = [];
+    let currentLine = '';
+    
+    for (let word of words) {
+        const testLine = currentLine ? currentLine + ' ' + word : word;
+        
+        if (testLine.length > maxCharsPerLine && currentLine) {
+            lines.push(currentLine);
+            currentLine = word;
+        } else {
+            currentLine = testLine;
+        }
+    }
+    
+    if (currentLine) {
+        lines.push(currentLine);
+    }
+    
+    return lines;
+}
+
+// Helper function to check if we need a new page
+function checkPageBreak(yPosition, additionalHeight = 20) {
+    const pageHeight = doc.internal.pageSize.height;
+    const margin = 20;
+    
+    if (yPosition + additionalHeight > pageHeight - margin) {
+        doc.addPage();
+        return 30; // Return new Y position after page break
+    }
+    return yPosition;
+}
+
+// Helper function to add a row with proper text wrapping and page break handling
+function addAssessmentRow(label, value, startY) {
+    // Estimate the height needed for this row
+    const lines = wrapText(value || '', 50);
+    const estimatedHeight = lines.length * 5 + 8;
+    
+    // Check if we need a new page
+    startY = checkPageBreak(startY, estimatedHeight);
+    
+    // Set font explicitly before each operation
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    
+    // Draw label
+    doc.text(label + ':', 25, startY);
+    
+    // Draw each line
+    lines.forEach((line, index) => {
+        const lineY = startY + (index * 5);
+        
+        // Check if this line would go off the page
+        if (lineY > doc.internal.pageSize.height - 30) {
+            doc.addPage();
+            const newLineY = 30 + (index * 5);
+            
+            // Reset font after page break
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            doc.text(line, 75, newLineY);
+        } else {
+            // Reset font for each line to prevent switching
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            doc.text(line, 75, lineY);
+        }
+    });
+    
+    // Calculate the next Y position
+    const lastLineY = startY + ((lines.length - 1) * 5);
+    if (lastLineY > doc.internal.pageSize.height - 30) {
+        // If we ended on a new page, return position on new page
+        return 30 + (lines.length * 5) + 8;
+    } else {
+        return startY + (lines.length * 5) + 8;
+    }
+}
+
+// Add each assessment item
+currentY = addAssessmentRow('Total Score', assessment.totalScore, currentY);
+
+if (assessment.isRiskOverridden) {
+    currentY = addAssessmentRow('Risk Adjustment', `${assessment.riskAdjustment} (Overridden)`, currentY);
     if (assessment.overrideReason) {
-        assessmentBody.push(['Override Reason', assessment.overrideReason]);
+        currentY = addAssessmentRow('Override Reason', assessment.overrideReason, currentY);
     }
 } else {
-    // Standard risk adjustment
-    assessmentBody.push(['Risk Adjustment', assessment.riskAdjustment]);
+    currentY = addAssessmentRow('Risk Adjustment', assessment.riskAdjustment, currentY);
 }
 
-// Add PMO approach
-assessmentBody.push(['PMO Approach', assessment.recommendedApproach]);
+currentY = addAssessmentRow('PMO Approach', assessment.recommendedApproach, currentY);
 
-// Add value calculation notes if available
 if (values.comments && values.comments.trim()) {
-    assessmentBody.push(['Value Calculation Notes', values.comments]);
+    currentY = addAssessmentRow('Value Calculation Notes', values.comments, currentY);
 }
 
-doc.autoTable({
-    startY: doc.lastAutoTable.finalY + 30,
-    head: [['Assessment', 'Result']],
-    body: assessmentBody,
-    theme: 'grid',
-    headStyles: { 
-        fillColor: [240, 109, 13],
-        textColor: [255, 255, 255]
-    },
-    margin: { left: 30 },
-    columnStyles: {
-        0: { cellWidth: 50 }
-    },
-    bodyStyles: {
-        valign: 'top'
-    },
-    columnStyles: {
-        1: { cellWidth: 100, overflow: 'linebreak' }
-    }
-});
+// Add some spacing before the next section
+doc.lastAutoTable = { finalY: currentY + 10 };
 
 // Key Metrics section - New page
 doc.addPage();
